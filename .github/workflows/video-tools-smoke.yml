@@ -60,9 +60,13 @@ jobs:
               if (await page.locator('#toolTitle').innerText() !== 'Compress Video') throw new Error('Direct link did not open the Compress Video workspace');
               await page.locator('#mediaFile').setInputFiles('/tmp/toolnest-smoke.mp4');
               await page.locator('#quality').selectOption('0.45');
-              const downloadPromise = page.waitForEvent('download', { timeout: 180000 });
               await page.locator('#process').click();
-              const download = await downloadPromise;
+              const outcome = await Promise.race([
+                page.waitForEvent('download', { timeout: 90000 }).then(download => ({ download })),
+                page.locator('.status.error').waitFor({ timeout: 90000 }).then(() => ({ error: true }))
+              ]);
+              if (outcome.error) throw new Error('Compression reported an error: ' + await page.locator('.status.error').innerText());
+              const download = outcome.download;
               const path = await download.path();
               const fs = require('fs');
               const stat = fs.statSync(path);
