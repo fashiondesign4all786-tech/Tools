@@ -221,6 +221,22 @@ main{padding:58px 0 88px}
 @media(max-width:1000px){#toolGrid.grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
 @media(max-width:760px){#toolGrid.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}}
 @media(max-width:540px){#toolGrid.grid{grid-template-columns:1fr!important}#toolGrid .tool-card{min-height:unset}}
+
+/* ToolNest visual refresh inspired by the reference layout (original branding retained) */
+.hero{background:radial-gradient(ellipse at 8% 8%,rgba(238,233,255,.95),transparent 36%),radial-gradient(ellipse at 94% 12%,rgba(255,232,239,.8),transparent 30%),#f7f6fb!important;color:#34343f!important;padding:34px 0 27px!important;text-align:center!important;overflow:hidden}
+.hero:after{display:none!important}.hero-grid{display:block!important;max-width:1120px}.hero-grid>div:first-child{display:flex;flex-direction:column;align-items:center}.eyebrow{color:#5b4bdb!important;justify-content:center}.hero h1{font-size:clamp(2rem,4vw,3.2rem)!important;line-height:1.12!important;letter-spacing:-.045em!important;max-width:100%!important;margin:9px 0 8px!important;color:#34343f!important}.hero-highlight{color:#34343f!important}.hero p{max-width:920px!important;font-size:clamp(1rem,1.8vw,1.3rem)!important;color:#5b5b67!important}.hero-points{justify-content:center!important;margin:13px 0 0!important}.hero-stat{display:none!important}.searchbox{margin:23px auto 0!important;max-width:720px!important;width:100%;border:1px solid #dedde8!important;border-radius:14px!important;box-shadow:0 5px 18px rgba(38,35,70,.06)!important}.searchbox button{background:#5b4bdb!important}.trust-strip{display:none!important}
+main{padding-top:30px!important}.section-head{align-items:center!important;margin-bottom:18px!important}.section-head h2{font-size:1.7rem!important}.reference-category-bar{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin:0 0 26px;padding:0}.reference-chip{border:1px solid #dadbe5;background:#fff;color:#53535f;border-radius:999px;padding:9px 17px;font-weight:700;font-size:.88rem;transition:background .15s,border-color .15s,color .15s}.reference-chip:hover,.reference-chip.active{background:#2f2e36;color:#fff;border-color:#2f2e36}
+#toolGrid.grid{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:16px!important}
+#toolGrid .tool-card{min-height:235px!important;padding:22px!important;border-radius:18px!important;background:#fff!important;border-color:#dedfe8!important;box-shadow:none!important}
+#toolGrid .tool-card:hover{box-shadow:0 10px 28px rgba(35,32,70,.09)!important;border-color:#c8c4e8!important}
+#toolGrid .tool-icon{width:46px!important;height:46px!important;border-radius:9px!important;box-shadow:none!important}
+#toolGrid .tool-card h3{font-size:1.08rem!important;font-weight:750!important;color:#353540!important;margin-top:15px!important}
+#toolGrid .tool-card .tool-tag{border:0!important;background:transparent!important;padding:8px 0 0!important;margin-top:auto!important;border-radius:0!important;color:#777786!important;font-size:.68rem!important}
+@media(max-width:1100px){#toolGrid.grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+@media(max-width:850px){#toolGrid.grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}.hero{padding:28px 0 24px!important}}
+@media(max-width:620px){#toolGrid.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.reference-category-bar{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;padding:2px 0 9px}.reference-chip{flex:0 0 auto}.section-head{align-items:flex-start!important;flex-direction:column!important}}
+@media(max-width:420px){#toolGrid.grid{grid-template-columns:1fr!important}}
+
 </style>
 <link rel="canonical" href="https://fashiondesign4all786-tech.github.io/Tools/">
 <style>/* Compact homepage hero/banner */.hero{padding:42px 0 38px!important}.hero h1{font-size:clamp(2.35rem,4.5vw,3.8rem)!important;margin-top:12px!important;margin-bottom:14px!important}.searchbox{margin-top:20px!important}.hero-stat{padding:18px 22px!important}.stat-illustration{height:135px!important}@media(max-width:760px){.hero{padding:34px 0!important}.hero h1{font-size:clamp(2rem,8vw,3rem)!important}}</style>
@@ -254,6 +270,9 @@ main{padding:58px 0 88px}
 <div class="trust-strip"><div class="wrap trust-inner"><span><i class="trust-dot"></i> Free to use</span><span>⌁ Simple, focused workflows</span><span>▣ Browser-based utilities</span><span>◎ Built for a global audience</span></div></div>
 \n<main class="wrap" id="tools"><div class="section-head"><div><h2>Find the right tool</h2><p>Browse by category or search by the task you want to complete.</p></div><span class="count" id="resultCount">All tools</span></div>
 
+<div class="reference-category-bar" id="referenceCategoryBar" aria-label="Filter tools by category">
+<button class="reference-chip active" data-filter="All">All</button><button class="reference-chip" data-filter="Text">Text &amp; Writing</button><button class="reference-chip" data-filter="Images">Images</button><button class="reference-chip" data-filter="Audio &amp; Video">Audio &amp; Video</button><button class="reference-chip" data-filter="PDF">PDF Tools</button><button class="reference-chip" data-filter="Files">Files</button><button class="reference-chip" data-filter="Calculator">Calculators</button><button class="reference-chip" data-filter="Developer">Developer</button>
+</div>
 <div class="grid" id="toolGrid"></div>
 <section class="tool-area hidden" id="toolArea"><div class="tool-panel"><div class="panel-head"><div><h2 id="toolTitle">Tool</h2><p id="toolDesc"></p></div><button class="close" id="closeTool" aria-label="Close tool">Close ✕</button></div><div class="panel-body" id="toolBody"></div></div></section>
 <section class="info-section"><h2>Useful tools, made straightforward</h2><p>ToolNest brings everyday browser utilities into one organized place. Choose a category, search for a task, and open the tool you need. Many tools process your inputs locally in your browser; tools that use external open-source libraries may need an internet connection to load those libraries.</p><p class="notice">Please review the Privacy page before using tools with confidential files. Tool capabilities can vary by browser and file type.</p></section>
@@ -639,6 +658,15 @@ function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;',
 document.getElementById('closeTool').addEventListener('click',()=>{if(document.body.classList.contains('single-tool-page')){window.location.href='index.html';return;}area.classList.add('hidden');area.scrollIntoView({behavior:'smooth',block:'start'});});
 document.getElementById('search').addEventListener('input',e=>renderCards(e.target.value));
 document.getElementById('searchBtn').onclick=()=>{renderCards(document.getElementById('search').value);document.getElementById('tools').scrollIntoView({behavior:'smooth'})};
+
+document.querySelectorAll('#referenceCategoryBar [data-filter]').forEach(chip=>chip.addEventListener('click',()=>{
+ activeCategory=chip.dataset.filter;
+ document.querySelectorAll('#referenceCategoryBar .reference-chip').forEach(b=>b.classList.toggle('active',b===chip));
+ document.querySelectorAll('[data-nav-category]').forEach(a=>a.classList.toggle('active',(a.dataset.navCategory||'All')===activeCategory));
+ renderCards(document.getElementById('search').value);
+ document.getElementById('resultCount').textContent=activeCategory==='All'?'All tools':activeCategory+' tools';
+}));
+
 renderCards();
 const requestedTool=new URLSearchParams(window.location.search).get('tool');
 if(requestedTool){
