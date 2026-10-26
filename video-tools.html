@@ -45,6 +45,75 @@ function validYouTube(raw){try{const u=new URL(raw);if(!['youtube.com','www.yout
 function bindSpeech(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;const start=document.getElementById('startSpeech');const stop=document.getElementById('stopSpeech');if(!SR){start.disabled=true;wb.insertAdjacentHTML('beforeend',message('Speech recognition is not supported in this browser. Try a supported version of Chrome.','error'));return}let rec;start.onclick=()=>{rec=new SR();rec.lang=document.getElementById('lang').value;rec.continuous=true;rec.interimResults=true;rec.onresult=e=>{let out='';for(let i=0;i<e.results.length;i++)out+=e.results[i][0].transcript+(e.results[i].isFinal?'\n':'');document.getElementById('speechResult').value=out};rec.onerror=e=>wb.insertAdjacentHTML('beforeend',message('Speech recognition: '+e.error,'error'));rec.start()};stop.onclick=()=>{if(rec)rec.stop()}}
 async function extractAudio(){const f=document.getElementById('mediaFile')?.files?.[0];if(!f){wb.insertAdjacentHTML('beforeend',message('Choose a file first.','error'));return}const b=document.getElementById('process');b.disabled=true;b.textContent='Processing…';try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)throw Error('Web Audio is not supported in this browser.');const ac=new AC();const data=await f.arrayBuffer();const buf=await ac.decodeAudioData(data);const wav=encodeWav(buf);const url=URL.createObjectURL(new Blob([wav],{type:'audio/wav'}));const a=document.createElement('a');a.href=url;a.download=f.name.replace(/\.[^.]+$/,'')+'.wav';a.className='result-link';a.textContent='Download extracted WAV audio';wb.appendChild(a);await ac.close();wb.insertAdjacentHTML('beforeend',message('Audio extracted successfully.','success'))}catch(e){wb.insertAdjacentHTML('beforeend',message('Could not decode this file in your browser. Try a common MP4/MOV/WebM file. '+e.message,'error'))}finally{b.disabled=false;b.textContent='Extract audio as WAV'}}
 function encodeWav(buf){const n=buf.length,ch=buf.numberOfChannels,rate=buf.sampleRate,bytes=2,interleaved=new Float32Array(n*ch);for(let c=0;c<ch;c++){const src=buf.getChannelData(c);for(let i=0;i<n;i++)interleaved[i*ch+c]=src[i]}const ab=new ArrayBuffer(44+interleaved.length*2),v=new DataView(ab);const str=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};str(0,'RIFF');v.setUint32(4,36+interleaved.length*2,true);str(8,'WAVE');str(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,ch,true);v.setUint32(24,rate,true);v.setUint32(28,rate*ch*2,true);v.setUint16(32,ch*2,true);v.setUint16(34,16,true);str(36,'data');v.setUint32(40,interleaved.length*2,true);let o=44;for(let i=0;i<interleaved.length;i++){const s=Math.max(-1,Math.min(1,interleaved[i]));v.setInt16(o,s<0?s*32768:s*32767,true);o+=2}return ab}
-async function compressVideo(){const f=document.getElementById('mediaFile')?.files?.[0];if(!f){wb.insertAdjacentHTML('beforeend',message('Choose a video first.','error'));return}if(!window.MediaRecorder){wb.insertAdjacentHTML('beforeend',message('Video re-encoding is not supported by this browser.','error'));return}const button=document.getElementById('process');button.disabled=true;button.textContent='Re-encoding…';let video,stream,rec,url;try{video=document.createElement('video');url=URL.createObjectURL(f);video.src=url;video.muted=false;video.playsInline=true;await new Promise((res,rej)=>{video.onloadedmetadata=res;video.onerror=()=>rej(Error('Cannot read this video format'))});const canvas=document.createElement('canvas');const scale=Math.min(1,1280/video.videoWidth);canvas.width=Math.max(2,Math.floor(video.videoWidth*scale/2)*2);canvas.height=Math.max(2,Math.floor(video.videoHeight*scale/2)*2);const ctx=canvas.getContext('2d');const cs=canvas.captureStream(24);let tracks=[...cs.getVideoTracks()];try{const vs=video.captureStream?video.captureStream():video.mozCaptureStream?.();if(vs)tracks.push(...vs.getAudioTracks())}catch{}stream=new MediaStream(tracks);const mime=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(t=>MediaRecorder.isTypeSupported(t));if(!mime)throw Error('WebM recording is unavailable in this browser.');const chunks=[];rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:Math.round(+(document.getElementById('quality').value)*1800000)});rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};const stopped=new Promise((resolve,reject)=>{rec.onstop=resolve;rec.onerror=()=>reject(Error('Recording failed'))});rec.start();await video.play();await new Promise((resolve,reject)=>{let raf;const draw=()=>{if(video.ended||video.paused){if(video.ended){resolve();return} }ctx.drawImage(video,0,0,canvas.width,canvas.height);raf=requestAnimationFrame(draw)};video.onended=()=>{cancelAnimationFrame(raf);resolve()};draw()});if(rec.state!=='inactive')rec.stop();await stopped;const blob=new Blob(chunks,{type:mime});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=f.name.replace(/\.[^.]+$/,'')+'-compressed.webm';a.className='result-link';a.textContent='Download compressed WebM ('+(blob.size/1024/1024).toFixed(2)+' MB)';wb.appendChild(a);wb.insertAdjacentHTML('beforeend',message('Finished. Original: '+(f.size/1024/1024).toFixed(2)+' MB; output: '+(blob.size/1024/1024).toFixed(2)+' MB. Verify audio and playback before deleting the original.','success'))}catch(e){wb.insertAdjacentHTML('beforeend',message('Could not compress this video: '+e.message,'error'))}finally{if(stream)stream.getTracks().forEach(t=>t.stop());if(url)URL.revokeObjectURL(url);button.disabled=false;button.textContent='Compress video'}}
+async function compressVideo(){
+ const f=document.getElementById('mediaFile')?.files?.[0];
+ if(!f){wb.insertAdjacentHTML('beforeend',message('Choose a video first.','error'));return}
+ if(!window.MediaRecorder){wb.insertAdjacentHTML('beforeend',message('Your browser does not support in-browser video recording. Use the latest desktop Chrome or Edge.','error'));return}
+ const button=document.getElementById('process');
+ button.disabled=true;button.textContent='Preparing video…';
+ let video,canvasStream,sourceStream,recordStream,rec,objectUrl,outputUrl,rafId;
+ try{
+  video=document.createElement('video');
+  objectUrl=URL.createObjectURL(f);video.src=objectUrl;video.muted=false;video.playsInline=true;video.preload='auto';
+  await new Promise((resolve,reject)=>{video.onloadedmetadata=resolve;video.onerror=()=>reject(Error('This video format cannot be opened by your browser.'))});
+  if(!Number.isFinite(video.duration)||video.duration<=0||!video.videoWidth||!video.videoHeight)throw Error('The video has no readable duration or dimensions.');
+  const scale=Math.min(1,1280/video.videoWidth),width=Math.max(2,Math.floor(video.videoWidth*scale/2)*2),height=Math.max(2,Math.floor(video.videoHeight*scale/2)*2);
+  const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
+  const ctx=canvas.getContext('2d');if(!ctx)throw Error('Canvas video processing is unavailable.');
+  canvasStream=canvas.captureStream(24);
+  try{sourceStream=video.captureStream?video.captureStream():video.mozCaptureStream?video.mozCaptureStream():null}catch(e){sourceStream=null}
+  const tracks=[...canvasStream.getVideoTracks()];
+  if(sourceStream){sourceStream.getAudioTracks().forEach(t=>tracks.push(t))}
+  recordStream=new MediaStream(tracks);
+  const mime=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(t=>MediaRecorder.isTypeSupported(t));
+  if(!mime)throw Error('WebM output is not supported by this browser.');
+  const quality=Number(document.getElementById('quality')?.value)||0.65;
+  const bitrate=Math.round(quality*1800000);
+  const chunks=[];
+  rec=new MediaRecorder(recordStream,{mimeType:mime,videoBitsPerSecond:bitrate});
+  rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+  const recordingDone=new Promise((resolve,reject)=>{rec.onstop=resolve;rec.onerror=()=>reject(Error('Browser recording failed. Try a shorter video.'))});
+  // Start playback and wait until it is actually playing before recording frames.
+  await video.play();
+  rec.start(1000);
+  button.textContent='Compressing 0%…';
+  await new Promise((resolve,reject)=>{
+   let settled=false;
+   const finish=()=>{if(settled)return;settled=true;if(rafId)cancelAnimationFrame(rafId);resolve()};
+   const fail=()=>{if(settled)return;settled=true;if(rafId)cancelAnimationFrame(rafId);reject(Error('Playback stopped before the video finished.'))};
+   video.addEventListener('ended',finish,{once:true});
+   video.addEventListener('error',fail,{once:true});
+   const draw=()=>{
+    if(settled)return;
+    try{ctx.drawImage(video,0,0,width,height)}catch(e){fail();return}
+    const percent=Math.min(99,Math.floor((video.currentTime/video.duration)*100));
+    button.textContent='Compressing '+percent+'%…';
+    if(video.ended){finish();return}
+    rafId=requestAnimationFrame(draw);
+   };
+   draw();
+  });
+  if(rec.state!=='inactive')rec.stop();
+  await recordingDone;
+  const blob=new Blob(chunks,{type:mime});
+  if(!blob.size)throw Error('The browser produced an empty output file. Try another video or browser.');
+  outputUrl=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=outputUrl;a.download=f.name.replace(/\.[^.]+$/,'')+'-compressed.webm';a.className='result-link';a.textContent='Download compressed WebM ('+(blob.size/1024/1024).toFixed(2)+' MB)';
+  wb.appendChild(a);
+  const change=((blob.size-f.size)/f.size)*100;
+  const summary=blob.size<f.size?'File size reduced by '+Math.abs(change).toFixed(1)+'%.':'The output is '+change.toFixed(1)+'% larger than the original; try the “Smaller file” quality setting.';
+  wb.insertAdjacentHTML('beforeend',message('Finished. Original: '+(f.size/1024/1024).toFixed(2)+' MB. Output: '+(blob.size/1024/1024).toFixed(2)+' MB. '+summary+(sourceStream&&sourceStream.getAudioTracks().length?' Audio track was included when supported.':' Audio may not be included by this browser; check the output before deleting the original.'),'success'));
+ }catch(e){
+  wb.insertAdjacentHTML('beforeend',message('Could not compress this video: '+(e&&e.message?e.message:'Unknown error')+' Try a shorter MP4/WebM video in desktop Chrome or Edge.','error'));
+ }finally{
+  if(rafId)cancelAnimationFrame(rafId);
+  if(rec&&rec.state!=='inactive'){try{rec.stop()}catch(e){}}
+  [recordStream,canvasStream,sourceStream].forEach(st=>{if(st)st.getTracks().forEach(t=>{try{t.stop()}catch(e){}})});
+  if(video){try{video.pause();video.removeAttribute('src');video.load()}catch(e){}}
+  if(objectUrl)URL.revokeObjectURL(objectUrl);
+  // Keep the output object URL alive so the download link remains usable.
+  button.disabled=false;button.textContent='Compress video';
+ }
+}
 document.getElementById('closeTool').onclick=()=>{ws.classList.add('hidden');history.replaceState(null,'',location.pathname+location.search)};document.getElementById('search').addEventListener('input',draw);document.getElementById('searchBtn').onclick=draw;document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{active=b.dataset.filter;document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('active',x===b));draw()});draw();const requestedTool=new URLSearchParams(location.search).get('tool');if(requestedTool&&items.some(x=>x.id===requestedTool)){openTool(requestedTool)}
 </script></body></html>
