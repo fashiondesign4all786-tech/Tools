@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Convert a video file you own into an MP3 audio file in your browser with ToolNest's Video to MP3 Converter.">
+<meta name="theme-color" content="#111827">
+<meta name="robots" content="index,follow">
+<title>Video to MP3 Converter | ToolNest</title>
+<style>
+:root{color-scheme:light;--ink:#151b2c;--muted:#667085;--line:#e4e7ef;--brand:#5b4bdb;--bg:#f5f7fb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}.wrap{width:min(900px,calc(100% - 32px));margin:auto}header{background:#fff;border-bottom:1px solid var(--line)}.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0}.brand{font-size:1.3rem;font-weight:900;text-decoration:none;color:var(--ink)}.brand span{color:var(--brand)}.back{color:var(--brand);font-weight:700;text-decoration:none}.hero{padding:35px 0 22px}.eyebrow{color:var(--brand);font-size:.8rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.hero h1{font-size:clamp(2rem,5vw,3.2rem);letter-spacing:-.05em;line-height:1.1;margin:9px 0}.hero p{color:var(--muted);max-width:700px}.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:clamp(18px,4vw,30px);box-shadow:0 12px 35px #1d25400a}.field{display:grid;gap:8px;margin:14px 0}.field label{font-weight:750}.field input{max-width:100%;padding:12px;border:1px solid #cfd5e2;border-radius:10px}.btn{border:0;background:var(--brand);color:#fff;border-radius:10px;padding:12px 18px;font-weight:800;cursor:pointer}.btn:disabled{opacity:.55;cursor:wait}.status{margin-top:16px;padding:13px;border-radius:10px;background:#f5f4ff;color:#36305f;overflow-wrap:anywhere}.status:empty{display:none}.hint{font-size:.88rem;color:var(--muted)}footer{padding:28px 0 45px;color:var(--muted);font-size:.88rem}a{color:var(--brand)}@media(max-width:540px){.nav{align-items:flex-start;flex-direction:column}.hero{padding-top:26px}}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><a class="brand" href="./">Tool<span>Nest</span></a><a class="back" href="./#tools">← All tools</a></div></header>
+<main class="wrap">
+<section class="hero"><div class="eyebrow">Audio &amp; Video</div><h1>Video to MP3 Converter</h1><p>Extract an MP3 audio track from a video file. Your selected file is processed in your browser; it is not uploaded to a ToolNest server.</p></section>
+<section class="panel">
+<div class="field"><label for="videoFile">Choose a video file</label><input id="videoFile" type="file" accept="video/*,.mp4,.mov,.mkv,.webm,.avi,.mpeg,.mpg,.m4v"></div>
+<p class="hint">The conversion engine is downloaded from a public CDN on first use and may be large. Keep this page open while it converts. Larger files may be slow or exceed your browser's available memory.</p>
+<button class="btn" id="convert" type="button">Convert to MP3</button>
+<div id="status" class="status" role="status" aria-live="polite"></div>
+</section>
+<section class="hero"><h2>How it works</h2><p>Choose a video file, start conversion, and download the resulting MP3. Only convert media you own or are authorized to use. Processing depends on browser compatibility and available memory.</p><p class="hint">If conversion fails, try a smaller MP4 file or a modern desktop browser. This free browser-based workflow is provided as-is; not every codec/container combination is supported.</p></section>
+</main>
+<footer><div class="wrap">© ToolNest · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a> · <a href="contact.html">Contact</a></div></footer>
+<script>
+const button=document.getElementById('convert'),fileInput=document.getElementById('videoFile'),status=document.getElementById('status');
+button.addEventListener('click',async()=>{
+ const file=fileInput.files&&fileInput.files[0];
+ if(!file){status.textContent='Choose a video file first.';return}
+ button.disabled=true;status.textContent='Loading the conversion engine… This may take a little while on first use.';
+ try{
+  const {createFFmpeg,fetchFile}=await import('https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js');
+  const ffmpeg=createFFmpeg({log:false,corePath:'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js'});
+  if(!ffmpeg.isLoaded()) await ffmpeg.load();
+  status.textContent='Converting video to MP3… Please keep this tab open.';
+  const ext=file.name.match(/\.[a-z0-9]{1,8}$/i)?.[0]||'.mp4';
+  const safeName='input-video'+ext;
+  ffmpeg.FS('writeFile',safeName,await fetchFile(file));
+  const output='toolnest-audio.mp3';
+  await ffmpeg.run('-i',safeName,'-vn','-codec:a','libmp3lame','-q:a','2',output);
+  const bytes=ffmpeg.FS('readFile',output);
+  const url=URL.createObjectURL(new Blob([bytes.buffer],{type:'audio/mpeg'}));
+  const a=document.createElement('a');a.href=url;a.download=(file.name.replace(/\.[^.]+$/,'')||'audio')+'.mp3';document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
+  status.textContent='Conversion finished. Your MP3 download should have started.';
+ }catch(err){console.error(err);status.textContent='Conversion failed. The conversion engine may be blocked by the browser/CDN, or the video may exceed available memory. Try a smaller MP4 in a current desktop browser.'}
+ finally{button.disabled=false}
+});
+</script>
+</body>
+</html>
