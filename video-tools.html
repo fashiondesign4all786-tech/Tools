@@ -54,8 +54,11 @@ async function compressVideo(){
  let video,canvasStream,sourceStream,recordStream,rec,objectUrl,outputUrl,rafId;
  try{
   video=document.createElement('video');
-  objectUrl=URL.createObjectURL(f);video.src=objectUrl;video.muted=false;video.playsInline=true;video.preload='auto';
-  await new Promise((resolve,reject)=>{video.onloadedmetadata=resolve;video.onerror=()=>reject(Error('This video format cannot be opened by your browser.'))});
+  objectUrl=URL.createObjectURL(f);
+  // Muting the preview avoids browser autoplay blocking during a long re-encode.
+  // captureStream() still supplies the media's audio track where the browser supports it.
+  video.muted=true;video.playsInline=true;video.preload='auto';video.src=objectUrl;
+  await new Promise((resolve,reject)=>{if(video.readyState>=1&&video.videoWidth){resolve();return}video.onloadedmetadata=resolve;video.onerror=()=>reject(Error('This video format cannot be opened by your browser. Try a standard MP4 (H.264/AAC) file.'))});
   if(!Number.isFinite(video.duration)||video.duration<=0||!video.videoWidth||!video.videoHeight)throw Error('The video has no readable duration or dimensions.');
   const scale=Math.min(1,1280/video.videoWidth),width=Math.max(2,Math.floor(video.videoWidth*scale/2)*2),height=Math.max(2,Math.floor(video.videoHeight*scale/2)*2);
   const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
@@ -73,24 +76,26 @@ async function compressVideo(){
   rec=new MediaRecorder(recordStream,{mimeType:mime,videoBitsPerSecond:bitrate});
   rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
   const recordingDone=new Promise((resolve,reject)=>{rec.onstop=resolve;rec.onerror=()=>reject(Error('Browser recording failed. Try a shorter video.'))});
-  // Start playback and wait until it is actually playing before recording frames.
-  await video.play();
+  // Start recording before playback so the first frames are not lost.
   rec.start(1000);
   button.textContent='Compressing 0%…';
   await new Promise((resolve,reject)=>{
-   let settled=false;
-   const finish=()=>{if(settled)return;settled=true;if(rafId)cancelAnimationFrame(rafId);resolve()};
-   const fail=()=>{if(settled)return;settled=true;if(rafId)cancelAnimationFrame(rafId);reject(Error('Playback stopped before the video finished.'))};
+   let settled=false,started=false;
+   const cleanup=()=>{if(rafId)cancelAnimationFrame(rafId);video.removeEventListener('ended',finish);video.removeEventListener('error',fail)};
+   const finish=()=>{if(settled)return;settled=true;cleanup();resolve()};
+   const fail=()=>{if(settled)return;settled=true;cleanup();reject(Error('Video playback stopped unexpectedly. Try a standard MP4 file.'))};
    video.addEventListener('ended',finish,{once:true});
    video.addEventListener('error',fail,{once:true});
    const draw=()=>{
     if(settled)return;
-    try{ctx.drawImage(video,0,0,width,height)}catch(e){fail();return}
+    if(video.readyState>=2){try{ctx.drawImage(video,0,0,width,height);started=true}catch(e){fail();return}}
     const percent=Math.min(99,Math.floor((video.currentTime/video.duration)*100));
     button.textContent='Compressing '+percent+'%…';
     if(video.ended){finish();return}
     rafId=requestAnimationFrame(draw);
    };
+   // Register listeners first; then begin muted playback to avoid autoplay-policy rejection.
+   video.play().catch(()=>fail());
    draw();
   });
   if(rec.state!=='inactive')rec.stop();
