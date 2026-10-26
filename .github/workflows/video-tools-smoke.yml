@@ -62,17 +62,18 @@ jobs:
               await page.locator('#quality').selectOption('0.45');
               await page.locator('#process').click();
               const outcome = await Promise.race([
-                page.waitForEvent('download', { timeout: 90000 }).then(download => ({ download })),
+                page.locator('.status:not(.error)').filter({ hasText: 'Finished. Original:' }).waitFor({ timeout: 90000 }).then(() => ({ success: true })),
                 page.locator('.status.error').waitFor({ timeout: 90000 }).then(() => ({ error: true }))
               ]);
               if (outcome.error) throw new Error('Compression reported an error: ' + await page.locator('.status.error').innerText());
-              const download = outcome.download;
+              const downloadPromise = page.waitForEvent('download', { timeout: 15000 });
+              await page.locator('a.result-link').click();
+              const download = await downloadPromise;
               const path = await download.path();
               const fs = require('fs');
               const stat = fs.statSync(path);
-              if (!download.suggestedFilename().endsWith('-compressed.mp4')) throw new Error('Unexpected output filename: ' + download.suggestedFilename());
+              if (!download.suggestedFilename().endsWith('-compressed.webm')) throw new Error('Unexpected output filename: ' + download.suggestedFilename());
               if (stat.size < 1000) throw new Error('Compressed output is unexpectedly small: ' + stat.size);
-              await page.getByText(/Finished\. Original:/).waitFor({ timeout: 10000 });
               console.log('PASS: direct workspace opened; compression produced ' + download.suggestedFilename() + ' (' + stat.size + ' bytes)');
               const relevantErrors = errors.filter(e => !/favicon\.ico/i.test(e));
               if (relevantErrors.length) console.log('Browser console diagnostics:', relevantErrors.join(' | '));
