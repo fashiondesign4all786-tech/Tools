@@ -46,3 +46,7 @@ Background Remover troubleshooting update: the integration now reports more spec
 
 
 Background Remover implementation: now loads the official @imgly/background-removal ES module through jsDelivr's +esm endpoint and uses the documented IMG.LY data CDN path. Uses the quantized model to reduce download size. First run requires internet and may take several minutes. Must still be verified on the deployed GitHub Pages site because browser/CDN execution cannot be fully tested in this generation environment.
+
+## Future domain and hosting migration
+
+See [HOSTING-MIGRATION.md](HOSTING-MIGRATION.md) for the recommended static-hosting approach, portability rules, and a staged migration checklist. ToolNest is currently a static site, so a PHP/MySQL hosting plan is unnecessary unless backend features are added.
