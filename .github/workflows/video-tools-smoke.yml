@@ -1,0 +1,81 @@
+name: Video tools browser smoke test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'video-tools.html'
+      - '.github/workflows/video-tools-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compression-smoke-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Chromium and test runner
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Create a small test video
+        run: |
+          ffmpeg -hide_banner -loglevel error -f lavfi -i testsrc=size=320x240:rate=12 -f lavfi -i sine=frequency=440:sample_rate=44100 -t 2 -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest /tmp/toolnest-smoke.mp4
+
+      - name: Start local static server
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/toolnest-http.log 2>&1 &
+          echo $! >/tmp/toolnest-http.pid
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/video-tools.html >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/toolnest-http.log
+          exit 1
+
+      - name: Verify direct tool launch and compress a real video
+        run: |
+          cat > /tmp/toolnest-smoke.cjs <<'EOF'
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
+            const page = await browser.newPage({ acceptDownloads: true });
+            const errors = [];
+            page.on('pageerror', e => errors.push(e.message));
+            page.on('console', msg => { if (msg.type() === 'error') errors.push(msg.text()); });
+            try {
+              await page.goto('http://127.0.0.1:4173/video-tools.html?tool=compressVideo', { waitUntil: 'domcontentloaded' });
+              await page.waitForSelector('#process', { timeout: 10000 });
+              if (await page.locator('#toolTitle').innerText() !== 'Compress Video') throw new Error('Direct link did not open the Compress Video workspace');
+              await page.locator('#mediaFile').setInputFiles('/tmp/toolnest-smoke.mp4');
+              await page.locator('#quality').selectOption('0.45');
+              const downloadPromise = page.waitForEvent('download', { timeout: 180000 });
+              await page.locator('#process').click();
+              const download = await downloadPromise;
+              const path = await download.path();
+              const fs = require('fs');
+              const stat = fs.statSync(path);
+              if (!download.suggestedFilename().endsWith('-compressed.mp4')) throw new Error('Unexpected output filename: ' + download.suggestedFilename());
+              if (stat.size < 1000) throw new Error('Compressed output is unexpectedly small: ' + stat.size);
+              await page.getByText(/Finished\. Original:/).waitFor({ timeout: 10000 });
+              console.log('PASS: direct workspace opened; compression produced ' + download.suggestedFilename() + ' (' + stat.size + ' bytes)');
+              const relevantErrors = errors.filter(e => !/favicon\.ico/i.test(e));
+              if (relevantErrors.length) console.log('Browser console diagnostics:', relevantErrors.join(' | '));
+            } catch (e) {
+              await page.screenshot({ path: '/tmp/toolnest-smoke-failure.png', fullPage: true }).catch(() => {});
+              console.error('FAIL:', e.message);
+              console.error('Page text:', (await page.locator('body').innerText().catch(() => '')).slice(0, 3000));
+              console.error('Browser errors:', errors.join(' | '));
+              process.exitCode = 1;
+            } finally {
+              await browser.close();
+            }
+          })();
+          EOF
+          node /tmp/toolnest-smoke.cjs
