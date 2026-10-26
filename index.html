@@ -332,6 +332,9 @@ document.querySelectorAll('[data-nav-category]').forEach(link=>link.addEventList
  history.replaceState(null,'',nextUrl.pathname+nextUrl.search+'#tools');
  document.getElementById('tools').scrollIntoView({behavior:'smooth',block:'start'});
 }));
+if(requestedCategory && allowedCategories.includes(requestedCategory)){
+ document.querySelectorAll('[data-nav-category]').forEach(a=>a.classList.toggle('active',a.dataset.navCategory===requestedCategory));
+}
 
 function field(label,id,placeholder='',type='text',value=''){return `<div class="field"><label for="${id}">${label}</label><input id="${id}" type="${type}" placeholder="${placeholder}" value="${value}"></div>`}
 function textArea(label,id,placeholder='Paste or type here…'){return `<div class="field"><label for="${id}">${label}</label><textarea id="${id}" placeholder="${placeholder}"></textarea></div>`}
