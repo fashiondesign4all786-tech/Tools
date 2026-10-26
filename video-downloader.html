@@ -131,29 +131,42 @@ if(id==='url'){document.getElementById('encodeUrl').onclick=()=>{document.getEle
 
 
 if(id==='videoDownload'){
- document.getElementById('prepareVideoDownload').onclick=()=>{
+ document.getElementById('prepareVideoDownload').onclick=async()=>{
   const raw=document.getElementById('videoUrl').value.trim();
   const requestedName=document.getElementById('videoName').value.trim();
   const link=document.getElementById('videoDownloadLink');
-  link.classList.add('hidden');link.removeAttribute('href');
-  if(!raw)return setResult('videoDownloadResult','Enter a direct video file URL first.',true);
+  link.classList.add('hidden');link.removeAttribute('href');link.removeAttribute('download');link.removeAttribute('target');
+  if(!raw)return setResult('videoDownloadResult','Paste a direct video-file URL first (for example, a link ending in .mp4).',true);
   let url;
-  try{url=new URL(raw)}catch(e){return setResult('videoDownloadResult','Enter a valid URL beginning with https:// or http://.',true)}
-  if(!['https:','http:'].includes(url.protocol))return setResult('videoDownloadResult','Only HTTP or HTTPS links are supported.',true);
+  try{url=new URL(raw)}catch(e){return setResult('videoDownloadResult','Enter a complete valid URL beginning with https:// or http://.',true)}
+  if(!['https:','http:'].includes(url.protocol))return setResult('videoDownloadResult','Only HTTP or HTTPS video links are supported.',true);
+  if(url.username||url.password)return setResult('videoDownloadResult','URLs containing embedded usernames or passwords are not supported.',true);
   const path=url.pathname.toLowerCase();
   const looksLikeVideo=/\.(mp4|webm|mov|m4v|ogv|ogg|avi|mkv)$/i.test(path);
   if(!looksLikeVideo){
-   setResult('videoDownloadResult','This does not look like a direct video file URL. A YouTube, TikTok, Instagram, or Facebook page link usually cannot be downloaded by this browser-only tool. Use the platform’s official download/export option where available, or paste a direct video-file URL.',true);
+   setResult('videoDownloadResult','This looks like a webpage, not a direct video file. Paste a direct .mp4/.webm file URL. YouTube, TikTok, Instagram, and Facebook page links cannot be downloaded by a static browser-only site; use the platform’s official download/export option.',true);
    return;
   }
-  link.href=url.href;
   const fallback=(path.split('/').pop()||'video.mp4').split('?')[0];
-  let name=requestedName||fallback;
-  if(!/\.[a-z0-9]{2,5}$/i.test(name))name += '.mp4';
-  link.download=name;
-  link.textContent='Download '+name;
-  link.classList.remove('hidden');
-  setResult('videoDownloadResult','Direct video link recognized. Click “Download video”. The host may still block cross-origin downloads or open the video in a new tab; if so, use the host’s download option.');
+  let name=(requestedName||fallback).trim().replace(/[\\/:*?"<>|]+/g,'_');
+  if(!/\.[a-z0-9]{2,5}$/i.test(name))name += (path.match(/\.[a-z0-9]{2,5}$/i)||[])[0]||'.mp4';
+  if(!name||name==='.')name='video.mp4';
+  link.href=url.href;link.download=name;link.textContent='Open video / fallback download';link.target='_blank';link.rel='noopener noreferrer';link.classList.remove('hidden');
+  setResult('videoDownloadResult','Checking the video link…');
+  try{
+   const response=await fetch(url.href,{mode:'cors',credentials:'omit'});
+   if(!response.ok)throw new Error('The server returned HTTP '+response.status);
+   const type=(response.headers.get('content-type')||'').toLowerCase();
+   if(type && !type.startsWith('video/') && !type.includes('octet-stream'))throw new Error('The link did not return a video file.');
+   const blob=await response.blob();
+   if(!blob.size)throw new Error('The video file is empty.');
+   const objectUrl=URL.createObjectURL(blob);
+   const a=document.createElement('a');a.href=objectUrl;a.download=name;document.body.appendChild(a);a.click();a.remove();
+   setTimeout(()=>URL.revokeObjectURL(objectUrl),60000);
+   setResult('videoDownloadResult','Download started: '+esc(name)+' ('+formatBytes(blob.size)+').');
+  }catch(e){
+   setResult('videoDownloadResult','The video host blocked browser access (often due to CORS) or did not return a video file. Use the fallback link below to open the original URL; if the host supports downloads, save it from the video player. This tool cannot download platform page links or bypass access restrictions.',true);
+  }
  };
 }
 if(id==='background'){
