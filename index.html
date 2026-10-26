@@ -364,7 +364,11 @@ function openTool(id){
   pdfMerge:'pdf-merger.html'
  };
  const page=pages[id];
- if(page){window.location.href=page;return;}
+ if(page){
+  if(id==='videoToMp3'){window.location.assign('video-to-mp3.html');return;}
+  window.location.assign(page);
+  return;
+ }
  window.location.href='index.html';
 }
 function toolMarkup(id){
