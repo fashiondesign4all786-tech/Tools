@@ -32,3 +32,7 @@ The homepage now uses a more polished layout inspired by common usability patter
 
 ## Background Remover
 Added a browser-based background removal tool that attempts to load the open-source @imgly/background-removal library from a public CDN. It requires an internet connection and model compatibility; test on the deployed site before promoting it. No paid API is used.
+
+
+## Video Downloader
+Added a browser-only direct video-link helper. It supports links that point directly to common video file extensions and that the host permits the browser to download. It intentionally does not download from platform page URLs or bypass DRM, login gates, paywalls, or platform restrictions. Use only content you own or are authorized to save.
