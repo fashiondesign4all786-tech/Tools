@@ -301,7 +301,15 @@ const tools = [
 {id:'background',name:'Background Remover',icon:'✂',desc:'Remove image backgrounds with an AI-powered browser workflow.',tag:'Images',detail:'Remove an image background using a free third-party browser library. Processing requires internet access and results depend on browser and model support.'},
 {id:'imageFormat',name:'Image Format Converter',icon:'🖼️',desc:'Convert supported images between PNG, JPG and WebP.',tag:'Images',detail:'Convert images between PNG, JPEG and WebP using your browser.'},
 {id:'pdfCompress',name:'PDF Size Checker',icon:'📄',desc:'Check the size of a PDF file before choosing a compression workflow.',tag:'PDF',detail:'This starter tool provides a local PDF size check and explains the limitation: actual PDF recompression requires a PDF processing library.'},
-{id:'pdfMerge',name:'PDF Merger',icon:'📚',desc:'Combine multiple PDF files into one document.',tag:'PDF',detail:'Merge multiple PDF files in your browser using a free open-source PDF library loaded from a CDN.'}
+{id:'pdfMerge',name:'PDF Merger',icon:'📚',desc:'Combine multiple PDF files into one document.',tag:'PDF',detail:'Merge multiple PDF files in your browser using a free open-source PDF library loaded from a CDN.'},
+{id:'youtubeText',name:'YouTube to Text',icon:'▤',desc:'Open a YouTube video and find its available transcript.',tag:'Audio & Video',detail:'Opens YouTube’s own transcript feature when captions are available.'},
+{id:'compressVideo',name:'Compress Video',icon:'⌗',desc:'Reduce a compatible video file size in your browser.',tag:'Audio & Video',detail:'Re-encodes supported videos to WebM locally in your browser.'},
+{id:'instagramDownload',name:'Instagram Download',icon:'◎',desc:'Find official options for saving your own Instagram content.',tag:'Audio & Video',detail:'Opens Instagram and its Help Center; direct URL downloading is not supported on this static site.'},
+{id:'tiktokDownload',name:'TikTok Video Download',icon:'▶',desc:'Find TikTok’s official video-saving options.',tag:'Audio & Video',detail:'Uses TikTok’s official options and respects creator download settings.'},
+{id:'audioText',name:'Audio to Text',icon:'♫',desc:'Transcribe live speech with supported browser speech recognition.',tag:'Audio & Video',detail:'Uses your microphone and browser speech recognition; it does not transcribe uploaded audio files.'},
+{id:'mp4mp3',name:'MP4 to MP3',icon:'♫',desc:'Convert a compatible video file to MP3 audio.',tag:'Audio & Video',detail:'Uses the dedicated browser-based MP3 conversion tool.'},
+{id:'extractAudio',name:'Extract Audio from Video',icon:'🔊',desc:'Extract a WAV audio track from a compatible video.',tag:'Audio & Video',detail:'Extracts a WAV audio track locally when the browser can decode the video.'},
+{id:'ytTranscript',name:'YouTube Transcript Helper',icon:'▤',desc:'Open a YouTube video to check its available transcript.',tag:'Audio & Video',detail:'Uses YouTube’s own transcript feature when captions are available.'}
 
 ];
 const grid=document.getElementById('toolGrid'), area=document.getElementById('toolArea'), body=document.getElementById('toolBody');
@@ -362,6 +370,8 @@ function output(id='result'){return `<div class="output" id="${id}" aria-live="p
 function setResult(id,html,err=false){const el=document.getElementById(id);if(el){el.innerHTML=html;el.classList.toggle('error',err)}}
 function downloadBlob(blob,name){const a=document.createElement('a');const url=URL.createObjectURL(blob);a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function openTool(id){
+ const videoToolIds=['youtubeText','compressVideo','instagramDownload','tiktokDownload','audioText','mp4mp3','extractAudio','ytTranscript'];
+ if(videoToolIds.includes(id)){const target=id==='instagramDownload'?'instagram':id==='tiktokDownload'?'tiktok':id;window.location.assign('video-tools.html?tool='+encodeURIComponent(target));return}
  const pages={
   word:'word-counter.html',
   imageResize:'image-resizer.html',
