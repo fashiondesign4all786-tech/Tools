@@ -249,7 +249,7 @@ main{padding:58px 0 88px}
 </style>
 </head>
 <body>
-<header class="site-header"><div class="wrap nav"><a class="logo" href="index.html" aria-label="ToolNest home">Tool<span>Nest</span></a><nav class="navlinks category-nav" aria-label="Tool categories"><a class="nav-item active" href="index.html" data-nav-category="All">Home</a><a class="nav-item" href="#tools" data-nav-category="Text">Text &amp; Writing</a><a class="nav-item" href="#tools" data-nav-category="Images">Image tools</a><a class="nav-item" href="#tools" data-nav-category="Audio &amp; Video">Audio &amp; Video</a><a class="nav-item" href="#tools" data-nav-category="PDF">PDF tools</a><a class="nav-item" href="#tools" data-nav-category="Files">Files</a><a class="nav-item" href="#tools" data-nav-category="Calculator">Calculators</a><a class="nav-item" href="#tools" data-nav-category="Date">Date &amp; time</a><a class="nav-item" href="#tools" data-nav-category="Developer">Developer</a><a class="nav-item" href="#tools" data-nav-category="Security">Security</a><a class="nav-item" href="#tools" data-nav-category="Generator">Generators</a><a class="nav-item" href="pdf-tools.html">Explore PDFs ↗</a><a class="nav-item" href="about.html">About</a></nav></div></header>
+<header class="site-header"><div class="wrap nav"><a class="logo" href="index.html" aria-label="ToolNest home">Tool<span>Nest</span></a><nav class="navlinks category-nav" aria-label="Tool categories"><a class="nav-item active" href="index.html#tools" data-nav-category="All">Home</a><a class="nav-item" href="index.html?category=Text#tools" data-nav-category="Text">Text &amp; Writing</a><a class="nav-item" href="index.html?category=Images#tools" data-nav-category="Images">Image tools</a><a class="nav-item" href="index.html?category=Audio%20%26%20Video#tools" data-nav-category="Audio &amp; Video">Audio &amp; Video</a><a class="nav-item" href="index.html?category=PDF#tools" data-nav-category="PDF">PDF tools</a><a class="nav-item" href="index.html?category=Files#tools" data-nav-category="Files">Files</a><a class="nav-item" href="index.html?category=Calculator#tools" data-nav-category="Calculator">Calculators</a><a class="nav-item" href="index.html?category=Date#tools" data-nav-category="Date">Date &amp; time</a><a class="nav-item" href="index.html?category=Developer#tools" data-nav-category="Developer">Developer</a><a class="nav-item" href="index.html?category=Security#tools" data-nav-category="Security">Security</a><a class="nav-item" href="index.html?category=Generator#tools" data-nav-category="Generator">Generators</a><a class="nav-item" href="pdf-tools.html">Explore PDFs ↗</a><a class="nav-item" href="about.html">About</a></nav></div></header>
 <section class="hero"><div class="wrap hero-grid"><div><div class="eyebrow">FREE ONLINE TOOLS</div><h1>Your tools.<br><span class="hero-highlight">One simple place.</span></h1><p>Simple, useful tools for everyday tasks.</p><div class="hero-points"><span><i>✓</i> Free</span><span><i>✓</i> No sign-up</span><span><i>✓</i> Browser-based</span></div><div class="searchbox"><input id="search" type="search" placeholder="Search tools — try “image”, “PDF” or “text”" aria-label="Search tools"><button id="searchBtn">Search tools&nbsp; →</button></div></div><div class="hero-stat"><div class="stat-topline"><span class="live-dot"></span> TOOLNEST <span class="stat-spark">✦</span></div><div class="stat-illustration"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="tool-tile tile-main">✦</div><div class="tool-tile tile-pdf">PDF</div><div class="tool-tile tile-image">▧</div><div class="tool-tile tile-text">T</div><div class="tool-tile tile-check">✓</div></div><div class="stat-label">A simpler way to get things done</div><strong>Less hassle.<br>More done.</strong><span></span><div class="mini"><span>✦</span> Simple tools. Smooth workflows.</div></div></div></section>
 <div class="trust-strip"><div class="wrap trust-inner"><span><i class="trust-dot"></i> Free to use</span><span>⌁ Simple, focused workflows</span><span>▣ Browser-based utilities</span><span>◎ Built for a global audience</span></div></div>
 \n<main class="wrap" id="tools"><div class="section-head"><div><h2>Find the right tool</h2><p>Browse by category or search by the task you want to complete.</p></div><span class="count" id="resultCount">All tools</span></div>
@@ -312,10 +312,25 @@ pdfSize:'<path d="M4 4h16v16H4z"/><path d="M8 16V8h3a2 2 0 0 1 0 4H8M15 8v8M15 1
 return '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(paths[id]||`<text x="12" y="17" text-anchor="middle" font-size="15" font-weight="700" stroke="none" fill="currentColor">${fallback}</text>`)+'</svg>';
 }
 function renderCards(filter=''){let found=tools.filter(t=>(activeCategory==='All'||t.tag===activeCategory)&&(t.name+' '+t.desc+' '+t.tag).toLowerCase().includes(filter.toLowerCase()));grid.innerHTML=found.map(t=>`<article class="tool-card" role="button" tabindex="0" data-id="${t.id}" aria-label="Open ${t.name}"><div class="tool-icon" aria-hidden="true">${iconSvg(t.id,t.icon)}</div><h3>${t.name}</h3><p>${t.desc}</p><span class="tool-tag">${t.tag}</span></article>`).join('')||'<p>No tools found. Try another search or category.</p>';document.getElementById('resultCount').textContent=`${found.length} tool${found.length===1?'':'s'}`;grid.querySelectorAll('.tool-card').forEach(c=>{c.addEventListener('click',()=>openTool(c.dataset.id));c.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openTool(c.dataset.id)}})})}
-document.querySelectorAll('[data-nav-category]').forEach(link=>link.addEventListener('click',()=>{
- activeCategory=link.dataset.navCategory;
- document.querySelectorAll('.site-header .navlinks [data-nav-category]').forEach(a=>a.classList.toggle('active',a===link));
+const allowedCategories=['All','Text','Images','Audio & Video','PDF','Files','Calculator','Date','Developer','Security','Generator'];
+const pageParams=new URLSearchParams(window.location.search);
+const requestedCategory=pageParams.get('category');
+if(requestedCategory && allowedCategories.includes(requestedCategory)) activeCategory=requestedCategory;
+document.querySelectorAll('[data-nav-category]').forEach(link=>link.addEventListener('click',event=>{
+ const next=link.dataset.navCategory || 'All';
+ const isSingleTool=pageParams.has('tool');
+ const currentPath=location.pathname.toLowerCase().replace(/\/+$/,'');
+ const isIndex=currentPath.endsWith('/index.html') || currentPath.endsWith('/tools') || currentPath==='/';
+ if(isSingleTool || !isIndex) return;
+ event.preventDefault();
+ activeCategory=allowedCategories.includes(next)?next:'All';
+ document.querySelectorAll('[data-nav-category]').forEach(a=>a.classList.toggle('active',a===link));
  renderCards(document.getElementById('search').value);
+ const nextUrl=new URL(location.href);
+ nextUrl.searchParams.delete('tool');
+ if(activeCategory==='All') nextUrl.searchParams.delete('category'); else nextUrl.searchParams.set('category',activeCategory);
+ history.replaceState(null,'',nextUrl.pathname+nextUrl.search+'#tools');
+ document.getElementById('tools').scrollIntoView({behavior:'smooth',block:'start'});
 }));
 
 function field(label,id,placeholder='',type='text',value=''){return `<div class="field"><label for="${id}">${label}</label><input id="${id}" type="${type}" placeholder="${placeholder}" value="${value}"></div>`}
