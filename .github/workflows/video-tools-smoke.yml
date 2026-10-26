@@ -24,6 +24,11 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
+      - name: Install FFmpeg encoder
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
       - name: Create a small test video
         run: |
           ffmpeg -hide_banner -loglevel error -f lavfi -i testsrc=size=320x240:rate=12 -f lavfi -i sine=frequency=440:sample_rate=44100 -t 2 -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest /tmp/toolnest-smoke.mp4
