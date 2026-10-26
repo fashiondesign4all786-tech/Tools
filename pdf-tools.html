@@ -64,9 +64,41 @@ main{padding:32px 0 64px}.intro{display:flex;justify-content:space-between;align
 /* Friendly guided workspace */
 .workspace-guide{padding:18px;border:1px solid #e9e7fb;border-radius:16px;background:#f8f7ff;margin-bottom:22px}.guide-heading{display:flex;gap:10px;align-items:center;margin-bottom:14px}.guide-spark{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:#e8e4ff;color:#5b4bdb}.guide-heading strong{display:block}.guide-heading p{margin:2px 0 0;color:#767c93;font-size:.84rem}.guide-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.guide-step{padding:12px;border:1px solid #eceaf8;border-radius:12px;background:white}.guide-step span{display:inline-grid;place-items:center;width:25px;height:25px;border-radius:50%;background:#6254e8;color:white;font-weight:900;margin-right:8px}.guide-step strong,.guide-step small{display:block}.guide-step small{margin-top:4px;color:#858ba0;font-size:.76rem}.upload-drop{display:flex;align-items:center;gap:12px;position:relative;padding:14px;border:1.5px dashed #c9c5f1;border-radius:14px;background:#fbfaff;cursor:pointer}.upload-drop:hover,.upload-drop:focus-within{border-color:#7669eb;background:#f6f4ff}.upload-symbol{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:#e9e6ff;color:#5b4bdb;font-size:1.4rem}.upload-copy{display:block;min-width:0}.upload-copy strong,.upload-copy small{display:block}.upload-copy small{color:#858ba0;font-size:.78rem}.upload-action{margin-left:auto;border:1px solid #dedafa;border-radius:8px;padding:6px 10px;background:white;color:#5b4bdb;font-size:.8rem;font-weight:800}.upload-drop input[type=file]{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;clip:rect(0,0,0,0)}.file-preview{display:block;margin-top:7px;color:#858ba0;font-size:.8rem;overflow-wrap:anywhere}.file-preview.has-files{color:#247558}.file-chip{display:inline-flex;gap:7px;align-items:center;margin:3px 5px 0 0;padding:6px 9px;border:1px solid #ccefe0;border-radius:9px;background:#f0fbf6;color:#285d4a}.file-chip small{color:#638b7a;white-space:nowrap}@media(max-width:640px){.guide-steps{grid-template-columns:1fr}.guide-step{display:flex;align-items:center;gap:8px}.guide-step small{margin-left:auto}.upload-drop{gap:9px;padding:11px}}
 .footer-links{display:flex;flex-wrap:wrap;gap:8px 15px;margin-top:10px}.footer-links a{color:#fff;text-decoration:none;font-size:.84rem}.footer-links a:hover{text-decoration:underline}
+
+/* Keep the PDF section visually consistent with the ToolNest homepage */
+:root{--ink:#111827;--muted:#64748b;--line:#e2e8f0;--bg:#f7f8fc;--brand:#5145cd;--soft:#f1efff}
+body{background:#f7f8fc;color:var(--ink)}
+.site-header{background:rgba(255,255,255,.96);box-shadow:0 4px 22px rgba(20,28,65,.035)}
+.site-header .nav{min-height:72px;flex-wrap:nowrap;padding:8px 0;gap:18px}
+.brand-mark{border-radius:11px}
+.navlinks{gap:7px;scrollbar-width:none}
+.navlinks::-webkit-scrollbar{display:none}
+.navlinks a{font-size:.87rem;padding:9px 11px;border-radius:10px;transition:background .18s,color .18s}
+.navlinks a:hover,.navlinks a.active{background:#f1efff;color:#5145cd}
+.hero{padding:72px 0 62px;background:radial-gradient(ellipse at 84% 10%,rgba(126,113,245,.30),transparent 32%),radial-gradient(ellipse at 8% 95%,rgba(45,212,191,.13),transparent 34%),linear-gradient(125deg,#14172c 0%,#222044 58%,#35306f 100%)}
+.hero h1{font-size:clamp(2.8rem,5.3vw,4.5rem);letter-spacing:-.065em;max-width:780px}
+.hero p{max-width:700px}
+.search{border-radius:15px;box-shadow:0 16px 40px rgba(9,11,31,.15);border:1px solid #e3e5ef;padding:14px 16px}
+.hero-meta{gap:9px}
+.hero-meta span{border-color:#ffffff30;background:#ffffff0b;border-radius:999px;padding:7px 11px}
+main{padding:36px 0 76px}
+.intro h2{font-size:clamp(1.5rem,2.4vw,2rem);letter-spacing:-.045em}
+.pdf-section h2{font-size:1.08rem}
+.pdf-grid{border-radius:17px;box-shadow:0 4px 15px rgba(25,35,70,.025)}
+.pdf-card{padding:15px 18px;transition:background .18s,box-shadow .18s}
+.pdf-card:hover,.pdf-card:focus-visible{background:#faf9ff;box-shadow:inset 3px 0 #5145cd}
+.workspace{border-radius:20px;box-shadow:0 18px 48px rgba(30,35,85,.10)}
+.work-head{background:linear-gradient(120deg,#fff,#fafaff)}
+.notice{border-radius:16px}
+footer{background:#15172a;color:#e7e9f5;padding:28px 0}
+footer a{color:#d4d7ed}
+footer a:hover{color:white}
+@media(max-width:1050px){.site-header .nav{align-items:flex-start;flex-direction:column;gap:8px}.navlinks{width:100%}}
+@media(max-width:650px){.wrap{width:min(100% - 28px,1160px)}.hero{padding:52px 0 46px}.hero h1{font-size:clamp(2.55rem,12vw,3.6rem)}main{padding-top:28px}.intro{align-items:flex-start;flex-direction:column}.pdf-card{grid-template-columns:42px minmax(0,1fr) auto;gap:11px;padding:13px}.pdf-desc{grid-column:2 / -1;font-size:.83rem}.pdf-state{grid-column:3;grid-row:1}.hero-meta{gap:7px}.hero-meta span{font-size:.78rem}}
+
 </style><link rel="canonical" href="https://fashiondesign4all786-tech.github.io/Tools/pdf-tools.html">
 </head><body>
-<header class="site-header"><div class="wrap nav"><a class="brand" href="index.html" aria-label="ToolNest home"><span class="brand-mark">T</span><span>Tool<span>Nest</span></span></a><nav class="navlinks category-nav" aria-label="Tool categories"><a class="" href="index.html#tools">Home</a><a class="" href="index.html?category=Text#tools">Text &amp; Writing</a><a class="" href="index.html?category=Images#tools">Image tools</a><a class="" href="video-tools.html">Audio &amp; Video</a><a class="active" href="#catalog">PDF tools</a><a class="" href="index.html?category=Files#tools">File Tools</a><a class="" href="index.html?category=Generator#tools">QR &amp; Generators</a></nav></div></header>
+<header class="site-header"><div class="wrap nav"><a class="brand" href="index.html" aria-label="ToolNest home"><span class="brand-mark">T</span><span>Tool<span>Nest</span></span></a><nav class="navlinks category-nav" aria-label="Tool categories"><a class="" href="index.html#tools">Home</a><a class="" href="index.html?category=Text#tools">Text &amp; Writing</a><a class="" href="index.html?category=Images#tools">Image tools</a><a class="" href="index.html?category=Audio%20%26%20Video#tools">Audio &amp; Video</a><a class="active" href="#catalog">PDF tools</a><a class="" href="index.html?category=Files#tools">File Tools</a><a class="" href="index.html?category=Generator#tools">QR &amp; Generators</a></nav></div></header>
 <section class="hero"><div class="wrap"><div class="eyebrow">Your PDF workspace</div><h1>PDF work, made simpler.</h1><p>Merge, split, convert, organize, edit and extract documents with browser-based utilities. Choose a tool below to get started.</p><input id="search" class="search" type="search" placeholder="Search PDF tools — e.g. split, rotate, convert…" aria-label="Search PDF tools"><div class="hero-meta"><span>✓ No account required</span><span>✓ Files processed in your browser where supported</span><span>✓ 33 PDF utilities</span></div></div></section>
 <main class="wrap" id="catalog"><div class="intro"><div><h2>Explore PDF tools</h2><p>Choose a PDF task below. Audio and video tools are listed separately from PDF tools.</p></div><span class="count" id="count">33 tools</span></div>
 <div id="sections"></div>
