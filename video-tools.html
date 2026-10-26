@@ -32,7 +32,7 @@ function draw(){const q=document.getElementById('search').value.trim().toLowerCa
 function message(text,type=''){return '<div class="status '+type+'" role="status">'+text+'</div>'}
 function uploadField(accept='video/*,audio/*'){return '<div class="drop"><label><strong>Select a video or audio file</strong><br><span class="hint">File processing happens locally in this browser.</span><br><input id="mediaFile" type="file" accept="'+accept+'" style="margin-top:12px"></label></div>'}
 function openTool(id){if(id==='mp4mp3'){window.location.href='video-to-mp3.html';return}const x=items.find(t=>t.id===id);if(!x)return;ws.classList.remove('hidden');document.getElementById('toolTitle').textContent=x.name;document.getElementById('toolDesc').textContent=x.desc;
-if(x.kind==='compress'){wb.innerHTML=uploadField('video/*')+'<div class="field"><label for="quality">Output quality</label><select id="quality"><option value="0.85">High quality</option><option value="0.65" selected>Balanced (smaller file)</option><option value="0.45">Smaller file</option></select></div><button class="btn" id="process">Compress video</button>'+message('This tool uses FFmpeg in your browser to create a compressed MP4. The first run downloads the conversion engine and may take a little time.');document.getElementById('process').onclick=compressVideo}
+if(x.kind==='compress'){wb.innerHTML=uploadField('video/*')+'<div class="field"><label for="quality">Output quality</label><select id="quality"><option value="0.85">High quality</option><option value="0.65" selected>Balanced (smaller file)</option><option value="0.45">Smaller file</option></select></div><button class="btn" id="process">Compress video</button>'+message('Compresses supported videos locally to WebM. Large videos may take longer; the original file is not changed.');document.getElementById('process').onclick=compressVideo}
 else if(x.kind==='extract'){wb.innerHTML=uploadField()+'<button class="btn" id="process">Extract audio as WAV</button>'+message('Outputs WAV audio, not MP3. Very large files may exceed your browser’s memory.');document.getElementById('process').onclick=extractAudio}
 else if(x.kind==='speech'){wb.innerHTML='<p>Use live speech recognition supported by your browser. This listens through your microphone; it does not upload or transcribe a selected audio file.</p><div class="field"><label for="lang">Spoken language</label><select id="lang"><option value="en-US">English (US)</option><option value="en-GB">English (UK)</option><option value="ur-PK">Urdu</option><option value="es-ES">Spanish</option></select></div><button class="btn" id="startSpeech">Start listening</button> <button class="btn secondary" id="stopSpeech">Stop</button><textarea id="speechResult" rows="7" placeholder="Recognized speech appears here…" style="width:100%;margin-top:15px"></textarea>'+message('Microphone permission is required. Browser support varies.');bindSpeech()}
 else if(x.kind==='yttext'){wb.innerHTML='<p>Paste a YouTube video link to open it. If the video provides captions, YouTube may offer a transcript in its own interface.</p><div class="field"><label for="yturl">YouTube video URL</label><input id="yturl" type="url" placeholder="https://www.youtube.com/watch?v=…"></div><button class="btn" id="openYT">Open video</button><button class="btn secondary" id="ytHelp">How to show transcript</button>'+message('A static GitHub Pages site cannot directly fetch YouTube captions. This helper opens the official video/transcript interface instead.');document.getElementById('openYT').onclick=()=>{const u=validYouTube(document.getElementById('yturl').value);if(!u){document.getElementById('toolDesc').textContent='Please enter a valid YouTube URL.';return}window.open(u,'_blank','noopener')};document.getElementById('ytHelp').onclick=()=>wb.insertAdjacentHTML('beforeend',message('On the YouTube video page, open the description and choose “Show transcript” when available. Transcripts depend on captions being provided.'))}
@@ -48,57 +48,80 @@ function encodeWav(buf){const n=buf.length,ch=buf.numberOfChannels,rate=buf.samp
 async function compressVideo(){
  const f=document.getElementById('mediaFile')?.files?.[0];
  if(!f){wb.insertAdjacentHTML('beforeend',message('Choose a video first.','error'));return}
+ if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){wb.insertAdjacentHTML('beforeend',message('Your browser does not support video compression. Use the latest desktop Chrome or Edge.','error'));return}
  const button=document.getElementById('process');
- button.disabled=true;button.textContent='Loading video engine…';
- let ffmpeg,outputUrl;
+ button.disabled=true;button.textContent='Preparing video…';
+ let video,canvasStream,sourceStream,recordStream,rec,objectUrl,rafId;
  try{
-  // Use FFmpeg WASM to process the uploaded file directly. This avoids fragile
-  // real-time screen/canvas recording and produces a real encoded video file.
-  // FFmpeg 0.11 is a UMD build. Load it as a classic script and read its
-  // documented global instead of importing the UMD file as an ES module.
-  if(!window.FFmpeg||!window.FFmpeg.createFFmpeg||!window.FFmpeg.fetchFile){
-   await new Promise((resolve,reject)=>{
-    const existing=document.querySelector('script[data-toolnest-ffmpeg]');
-    if(existing){existing.addEventListener('load',resolve,{once:true});existing.addEventListener('error',()=>reject(Error('Could not download the FFmpeg engine from jsDelivr. Check your connection or content blocker.')),{once:true});return}
-    const script=document.createElement('script');script.src='https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js';script.async=true;script.dataset.toolnestFfmpeg='1';
-    script.onload=resolve;script.onerror=()=>reject(Error('Could not download the FFmpeg engine from jsDelivr. Check your connection or content blocker.'));
-    document.head.appendChild(script);
-   });
-  }
-  const createFFmpeg=window.FFmpeg.createFFmpeg,fetchFile=window.FFmpeg.fetchFile;
-  if(!createFFmpeg||!fetchFile)throw Error('The FFmpeg script loaded but its API was unavailable. Refresh and try again.');
-  ffmpeg=createFFmpeg({
-   log:false,
-   corePath:'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js',
-   progress:({ratio})=>{if(Number.isFinite(ratio)){button.textContent='Compressing '+Math.max(0,Math.min(99,Math.round(ratio*100)))+'%…'}}
+  video=document.createElement('video');
+  objectUrl=URL.createObjectURL(f);
+  video.playsInline=true;video.preload='auto';video.src=objectUrl;
+  await new Promise((resolve,reject)=>{
+   if(video.readyState>=1&&video.videoWidth){resolve();return}
+   video.onloadedmetadata=resolve;
+   video.onerror=()=>reject(Error('This video format cannot be opened by your browser. Try a standard MP4 (H.264) file.'));
   });
-  if(!ffmpeg.isLoaded())await ffmpeg.load();
-  button.textContent='Preparing video…';
-  const ext=(f.name.match(/\.([a-z0-9]{1,8})$/i)?.[1]||'mp4').toLowerCase();
-  const safeInput='toolnest-input.'+ext;
+  if(!Number.isFinite(video.duration)||video.duration<=0||!video.videoWidth||!video.videoHeight)throw Error('The video has no readable duration or dimensions.');
+  if(video.duration>900)throw Error('For stability, this browser tool supports videos up to 15 minutes.');
+  const scale=Math.min(1,1280/video.videoWidth);
+  const width=Math.max(2,Math.floor(video.videoWidth*scale/2)*2);
+  const height=Math.max(2,Math.floor(video.videoHeight*scale/2)*2);
+  const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
+  const ctx=canvas.getContext('2d');if(!ctx)throw Error('Canvas video processing is unavailable.');
+  canvasStream=canvas.captureStream(24);
+  try{sourceStream=video.captureStream?video.captureStream():video.mozCaptureStream?video.mozCaptureStream():null}catch(e){sourceStream=null}
+  const tracks=[...canvasStream.getVideoTracks()];
+  if(sourceStream)sourceStream.getAudioTracks().forEach(t=>tracks.push(t));
+  recordStream=new MediaStream(tracks);
+  const mime=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(t=>MediaRecorder.isTypeSupported(t));
+  if(!mime)throw Error('WebM output is not supported in this browser.');
   const quality=document.getElementById('quality')?.value||'0.65';
-  const crf=quality==='0.85'?'23':quality==='0.45'?'32':'28';
-  const output='toolnest-compressed.mp4';
-  ffmpeg.FS('writeFile',safeInput,await fetchFile(f));
-  button.textContent='Compressing video…';
-  await ffmpeg.run('-i',safeInput,'-vf','scale=min(1280\\,iw):-2','-c:v','libx264','-preset','ultrafast','-crf',crf,'-c:a','aac','-b:a','96k','-movflags','+faststart',output);
-  const data=ffmpeg.FS('readFile',output);
-  if(!data||!data.length)throw Error('The encoder returned an empty file. Try a shorter or standard MP4 video.');
-  const blob=new Blob([data],{type:'video/mp4'});
-  outputUrl=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=outputUrl;a.download=(f.name.replace(/\.[^.]+$/,'')||'video')+'-compressed.mp4';a.className='result-link';a.textContent='Download compressed MP4 ('+(blob.size/1024/1024).toFixed(2)+' MB)';
+  const bitrate=quality==='0.85'?2800000:quality==='0.45'?850000:1600000;
+  const chunks=[];
+  rec=new MediaRecorder(recordStream,{mimeType:mime,videoBitsPerSecond:bitrate,audioBitsPerSecond:128000});
+  rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+  const recordingDone=new Promise((resolve,reject)=>{
+   rec.onstop=resolve;
+   rec.onerror=()=>reject(Error('The browser recorder failed. Try a shorter MP4 video.'));
+  });
+  rec.start(1000);
+  button.textContent='Compressing 0%…';
+  await new Promise((resolve,reject)=>{
+   let settled=false;
+   const cleanup=()=>{if(rafId)cancelAnimationFrame(rafId);video.removeEventListener('ended',onEnded);video.removeEventListener('error',onError)};
+   const finish=()=>{if(settled)return;settled=true;cleanup();resolve()};
+   const fail=()=>{if(settled)return;settled=true;cleanup();reject(Error('Video playback stopped unexpectedly. Try a standard MP4 file.'))};
+   const onEnded=()=>finish(),onError=()=>fail();
+   video.addEventListener('ended',onEnded,{once:true});video.addEventListener('error',onError,{once:true});
+   const drawFrame=()=>{
+    if(settled)return;
+    if(video.readyState>=2){try{ctx.drawImage(video,0,0,width,height)}catch(e){fail();return}}
+    const pct=Math.min(99,Math.floor((video.currentTime/video.duration)*100));
+    button.textContent='Compressing '+pct+'%…';
+    if(video.ended){finish();return}
+    rafId=requestAnimationFrame(drawFrame);
+   };
+   video.play().then(drawFrame).catch(()=>fail());
+  });
+  if(rec.state!=='inactive')rec.stop();
+  await recordingDone;
+  const blob=new Blob(chunks,{type:mime});
+  if(!blob.size)throw Error('The browser produced an empty output. Try a shorter video.');
+  const outputUrl=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=outputUrl;a.download=(f.name.replace(/\.[^.]+$/,'')||'video')+'-compressed.webm';a.className='result-link';a.textContent='Download compressed WebM ('+(blob.size/1024/1024).toFixed(2)+' MB)';
   wb.appendChild(a);
   const delta=((blob.size-f.size)/f.size)*100;
-  const note=blob.size<f.size?'File size reduced by '+Math.abs(delta).toFixed(1)+'%.': 'The output is '+delta.toFixed(1)+'% larger than the original. Try “Smaller file” quality.';
-  wb.insertAdjacentHTML('beforeend',message('Finished. Original: '+(f.size/1024/1024).toFixed(2)+' MB. Output: '+(blob.size/1024/1024).toFixed(2)+' MB. '+note,'success'));
+  const note=blob.size<f.size?'File size reduced by '+Math.abs(delta).toFixed(1)+'%.':'The output is '+delta.toFixed(1)+'% larger than the original. Try “Smaller file” quality.';
+  wb.insertAdjacentHTML('beforeend',message('Finished. Original: '+(f.size/1024/1024).toFixed(2)+' MB. Output: '+(blob.size/1024/1024).toFixed(2)+' MB. '+note+' Output format: WebM. Audio is included when supported by the browser.','success'));
  }catch(e){
   console.error('ToolNest video compression error:',e);
-  const detail=e&&e.message?e.message:String(e);
-  wb.insertAdjacentHTML('beforeend',message('Compression failed: '+detail+'. Use a current desktop Chrome or Edge browser, try a smaller video, and ensure the CDN is not blocked.','error'));
+  wb.insertAdjacentHTML('beforeend',message('Compression failed: '+(e&&e.message?e.message:String(e))+' Try a short MP4 video in current desktop Chrome or Edge.','error'));
  }finally{
-  if(ffmpeg&&ffmpeg.isLoaded()){
-   try{ffmpeg.exit()}catch(e){}
-  }
+  if(rafId)cancelAnimationFrame(rafId);
+  if(rec&&rec.state!=='inactive'){try{rec.stop()}catch(e){}}
+  [recordStream,canvasStream,sourceStream].forEach(st=>{if(st)st.getTracks().forEach(t=>{try{t.stop()}catch(e){}})});
+  if(video){try{video.pause();video.removeAttribute('src');video.load()}catch(e){}}
+  if(objectUrl)URL.revokeObjectURL(objectUrl);
   button.disabled=false;button.textContent='Compress video';
  }
 }
