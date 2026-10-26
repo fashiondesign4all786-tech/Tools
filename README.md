@@ -1,52 +1,58 @@
-# ToolNest improved website
+# ToolNest
 
-Includes the homepage, 10 separate tool pages, About, Contact, Privacy Policy, Terms of Use, sitemap.xml and robots.txt.
+Live website: https://fashiondesign4all786-tech.github.io/Tools/
 
-## Before publishing
-Replace the placeholder contact details in `contact.html` with a real monitored contact method. Review privacy and terms pages; these are starter templates, not legal advice. Test the tools on mobile and desktop.
+This repository is the source of truth for ToolNest. It is a static GitHub Pages website: HTML pages and browser-side JavaScript are published directly from the repository root.
 
-## Upload to your existing GitHub repository
-1. Download and extract this ZIP.
-2. Open https://github.com/fashiondesign4all786-tech/Tools
-3. Choose Add file → Upload files.
-4. Upload every file in this folder directly into the repository root. Replace the existing `index.html` when prompted.
-5. Commit changes and wait a few minutes for GitHub Pages to update.
+## Quick navigation
 
-Site: https://fashiondesign4all786-tech.github.io/Tools/
-Sitemap: https://fashiondesign4all786-tech.github.io/Tools/sitemap.xml
+| Need to edit | File or folder |
+|---|---|
+| Homepage, navigation, tool catalogue, search and category filters | `index.html` |
+| Full PDF tool catalogue and PDF tool workspace | `pdf-tools.html` |
+| Audio/video tools and browser-based video compression | `video-tools.html` |
+| Direct video URL helper | `video-downloader.html` |
+| Video-to-MP3 converter | `video-to-mp3.html` |
+| Background remover | `background-remover.html` |
+| Image tools | `image-compressor.html`, `image-resizer.html`, `image-format-converter.html`, `heic-to-jpg.html` |
+| Text and developer utilities | `word-counter.html`, `case-converter.html`, `json-formatter.html`, `url-encoder-decoder.html`, `csv-viewer.html` |
+| PDF conversion and merge/compression tools | `word-excel-to-pdf.html`, `pdf-merger.html`, `pdf-compressor.html` |
+| Generators and calculators | `qr-code-generator.html`, `password-generator.html`, `age-calculator.html`, `date-calculator.html`, `percentage-calculator.html`, `unit-converter.html` |
+| General site information | `about.html`, `contact.html`, `faq.html`, `privacy.html`, `terms.html` |
+| Search engine crawling | `robots.txt`, `sitemap.xml`, `sitemap.txt`, `google8090c8273271bd5d.html` |
+| Automated checks | `.github/workflows/` and `.github/scripts/` |
+| Optional YouTube downloader API source | `video-downloader-backend/` and `render.yaml` |
+| Hosting and migration notes | `HOSTING-MIGRATION.md` |
 
-Submitting a sitemap and requesting indexing can help Google discover pages but does not guarantee indexing or ranking.
+## Repository layout
 
+- **Root HTML files:** published pages and tool entry points. Keep these in the root so existing public URLs, internal links, search indexing, and bookmarks continue to work.
+- **`.github/workflows/`:** GitHub Actions workflows for SEO and video-tool smoke tests.
+- **`.github/scripts/`:** scripts used by automated repository checks.
+- **`video-downloader-backend/`:** separate Python/Flask API source; it is not deployed by GitHub Pages. `render.yaml` is its optional Render deployment configuration.
+- **`.nojekyll`:** tells GitHub Pages not to run Jekyll processing on the static site.
 
-## Added tools
-This update adds QR Code Generator, Password Generator, Unit Converter, HEIC to JPG Converter, Image Format Converter, PDF Compressor (file-size checker only; it does not compress the PDF), and PDF Merger.
+## Safe maintenance rules
 
-**External libraries:** QR generation, HEIC conversion, and PDF merging load free open-source libraries from public CDNs. These tools need an internet connection to load those libraries. Password generation, unit conversion, and image format conversion work locally in the browser. Files are not uploaded to a ToolNest server.
+1. Do not move published HTML pages into folders unless every internal link, navigation link, sitemap URL, canonical URL, and redirect is updated and tested. Root placement is intentional for URL stability.
+2. Do not delete the Google verification file, robots file, sitemap files, legal/contact pages, `.nojekyll`, or GitHub Actions workflows without checking their purpose first.
+3. Keep `sitemap.xml` and `sitemap.txt` synchronized with published pages. Submit `sitemap.xml` in Google Search Console.
+4. The optional backend is separate from the static site. The browser UI cannot call a backend that has not actually been deployed and configured.
+5. Before deleting a file, search the repository for its filename and confirm that no page, workflow, sitemap, or deployment config refers to it.
 
-**Important limitation:** The PDF Compressor is deliberately labelled as a size checker only. It does not claim to compress PDFs. A real PDF compression feature would need a tested compression library and quality checks.
+## Test automation
 
+- `.github/workflows/seo-audit.yml` runs the repository SEO audit.
+- `.github/workflows/video-tools-smoke.yml` runs an automated browser smoke test for the video compression tool.
 
-## Professional UI update
-The homepage now uses a more polished layout inspired by common usability patterns from established online tool suites: prominent search, clear category filters, consistent tool cards, responsive layout, and focused tool panels. This is an original design and does not copy any competitor's branding or exact interface.
+Check the **Actions** tab in GitHub for the latest run status. A workflow file existing in the repository does not by itself mean the test has passed.
 
+## Hosting
 
-## Background Remover
-Added a browser-based background removal tool that attempts to load the open-source @imgly/background-removal library from a public CDN. It requires an internet connection and model compatibility; test on the deployed site before promoting it. No paid API is used.
+The current site works as a static site on GitHub Pages. See [HOSTING-MIGRATION.md](HOSTING-MIGRATION.md) before changing hosting or URL structure.
 
+## Known feature limitations
 
-## Video Downloader
-Added a browser-only direct video-link helper. It supports links that point directly to common video file extensions and that the host permits the browser to download. It intentionally does not download from platform page URLs or bypass DRM, login gates, paywalls, or platform restrictions. Use only content you own or are authorized to save.
-
-
-## Word, Excel & Files to PDF
-Added a browser-based converter for DOCX text and XLSX cell contents to PDF. It loads jsPDF, Mammoth.js, and SheetJS from public CDNs. DOCX conversion extracts text and does not preserve exact layout/images/tables; XLSX conversion prints sheet cell contents and may not preserve charts, formulas or formatting. Legacy DOC/XLS are intentionally not supported; convert them to DOCX/XLSX first. Test output carefully.
-
-
-Background Remover troubleshooting update: the integration now reports more specific errors and disables the action while processing. The external model/CDN still requires live browser testing and may fail if the CDN bundle does not expose the expected browser API.
-
-
-Background Remover implementation: now loads the official @imgly/background-removal ES module through jsDelivr's +esm endpoint and uses the documented IMG.LY data CDN path. Uses the quantized model to reduce download size. First run requires internet and may take several minutes. Must still be verified on the deployed GitHub Pages site because browser/CDN execution cannot be fully tested in this generation environment.
-
-## Future domain and hosting migration
-
-See [HOSTING-MIGRATION.md](HOSTING-MIGRATION.md) for the recommended static-hosting approach, portability rules, and a staged migration checklist. ToolNest is currently a static site, so a PHP/MySQL hosting plan is unnecessary unless backend features are added.
+- The direct video URL helper only works when the source host permits browser downloads; it is not a universal social-media downloader.
+- Video compression outputs WebM.
+- Check each tool's own interface for format, browser, and external-library limitations. Do not advertise a tool as working until it has been tested on the deployed site.
