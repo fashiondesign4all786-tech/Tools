@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,follow">
+<meta name="description" content="Open a dedicated ToolNest online tool page.">
+<title>ToolNest Tool</title>
+</head>
+<body>
+<p>Loading tool…</p>
+<script>const id=new URLSearchParams(location.search).get("tool");const allowed=["word","imageResize","case","percent","age","json","csv","compress","date","url","qr","password","unit","heic","toPdf","videoDownload","background","imageFormat","pdfCompress","pdfMerge"];if(allowed.includes(id)){location.replace("index.html?tool="+encodeURIComponent(id))}else{location.replace("index.html")}</script>
+</body>
+</html>
