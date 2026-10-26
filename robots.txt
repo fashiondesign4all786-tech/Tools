@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://fashiondesign4all786-tech.github.io/Tools/sitemap.xml
