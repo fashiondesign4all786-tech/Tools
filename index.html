@@ -667,6 +667,25 @@ document.querySelectorAll('#referenceCategoryBar [data-filter]').forEach(chip=>c
  document.getElementById('resultCount').textContent=activeCategory==='All'?'All tools':activeCategory+' tools';
 }));
 
+
+/* Keep PDF catalogue reachable and restore homepage filter state after browser Back/Forward. */
+window.addEventListener('pageshow',()=>{
+ const params=new URLSearchParams(window.location.search);
+ const category=params.get('category');
+ if(category && allowedCategories.includes(category)) activeCategory=category;
+ document.querySelectorAll('[data-nav-category]').forEach(a=>a.classList.toggle('active',(a.dataset.navCategory||'All')===activeCategory));
+ document.querySelectorAll('#referenceCategoryBar .reference-chip').forEach(b=>b.classList.toggle('active',b.dataset.filter===activeCategory));
+ renderCards(document.getElementById('search').value);
+});
+window.addEventListener('popstate',()=>{
+ const params=new URLSearchParams(window.location.search);
+ const category=params.get('category');
+ activeCategory=category&&allowedCategories.includes(category)?category:'All';
+ document.querySelectorAll('[data-nav-category]').forEach(a=>a.classList.toggle('active',(a.dataset.navCategory||'All')===activeCategory));
+ document.querySelectorAll('#referenceCategoryBar .reference-chip').forEach(b=>b.classList.toggle('active',b.dataset.filter===activeCategory));
+ renderCards(document.getElementById('search').value);
+});
+
 renderCards();
 const requestedTool=new URLSearchParams(window.location.search).get('tool');
 if(requestedTool){
