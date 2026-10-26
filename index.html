@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Explore 19 free online tools from ToolNest for text, images, video links, PDF files, calculations, security and developer tasks.">
+<meta name="description" content="Explore 20 free online tools from ToolNest for text, images, PDF conversion, files, calculations, security and developer tasks.">
 <meta name="theme-color" content="#111827">
 <title>ToolNest — Free Online Tools for Everyday Tasks</title>
 <meta name="robots" content="index,follow">
@@ -29,9 +29,9 @@ main{padding:48px 0 80px}.section-head{display:flex;justify-content:space-betwee
 </head>
 <body>
 <header><div class="wrap nav"><a class="logo" href="index.html" aria-label="ToolNest home">Tool<span>Nest</span></a><nav class="navlinks"><a href="#tools">Explore tools</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></nav></div></header>
-<section class="hero"><div class="wrap hero-grid"><div><div class="eyebrow">✦ YOUR EVERYDAY DIGITAL TOOLKIT</div><h1>Get things done.<br>Without the hassle.</h1><p>A thoughtfully organized collection of free online tools for text, images, files, calculations and everyday digital work. Simple to use, quick to access, and built for everyone.</p><div class="searchbox"><input id="search" type="search" placeholder="Search 19 tools — try “image”, “PDF” or “text”" aria-label="Search tools"><button id="searchBtn">Search tools&nbsp; →</button></div></div><div class="hero-stat"><div class="stat-label">One place for everyday tasks</div><strong>19 tools</strong><span>Carefully grouped to help you find what you need faster.</span><div class="mini">✓ No account required<br>✓ Works on desktop and mobile<br>✓ Free tools, no paid APIs</div></div></div></section>
+<section class="hero"><div class="wrap hero-grid"><div><div class="eyebrow">✦ YOUR EVERYDAY DIGITAL TOOLKIT</div><h1>Get things done.<br>Without the hassle.</h1><p>A thoughtfully organized collection of free online tools for text, images, files, calculations and everyday digital work. Simple to use, quick to access, and built for everyone.</p><div class="searchbox"><input id="search" type="search" placeholder="Search 20 tools — try “image”, “PDF” or “text”" aria-label="Search tools"><button id="searchBtn">Search tools&nbsp; →</button></div></div><div class="hero-stat"><div class="stat-label">One place for everyday tasks</div><strong>20 tools</strong><span>Carefully grouped to help you find what you need faster.</span><div class="mini">✓ No account required<br>✓ Works on desktop and mobile<br>✓ Free tools, no paid APIs</div></div></div></section>
 <div class="trust-strip"><div class="wrap trust-inner"><span><i class="trust-dot"></i> Free to use</span><span>⌁ Simple, focused workflows</span><span>▣ Browser-based utilities</span><span>◎ Built for a global audience</span></div></div>
-<main class="wrap" id="tools"><div class="section-head"><div><h2>Find the right tool</h2><p>Browse by category or search by the task you want to complete.</p></div><span class="count" id="resultCount">19 tools</span></div>
+<main class="wrap" id="tools"><div class="section-head"><div><h2>Find the right tool</h2><p>Browse by category or search by the task you want to complete.</p></div><span class="count" id="resultCount">20 tools</span></div>
 <div class="category-bar" id="categoryBar"><button class="category-chip active" data-category="All">All tools</button><button class="category-chip" data-category="Text">Text & writing</button><button class="category-chip" data-category="Images">Image tools</button><button class="category-chip" data-category="Files">Files & documents</button><button class="category-chip" data-category="Calculator">Calculators</button><button class="category-chip" data-category="Date">Date & time</button><button class="category-chip" data-category="Developer">Developer tools</button><button class="category-chip" data-category="Security">Security</button><button class="category-chip" data-category="Generator">Generators</button></div>
 <div class="grid" id="toolGrid"></div>
 <section class="tool-area hidden" id="toolArea"><div class="tool-panel"><div class="panel-head"><div><h2 id="toolTitle">Tool</h2><p id="toolDesc"></p></div><button class="close" id="closeTool" aria-label="Close tool">Close ✕</button></div><div class="panel-body" id="toolBody"></div></div></section>
@@ -55,6 +55,7 @@ const tools = [
 {id:'password',name:'Password Generator',icon:'🔐',desc:'Generate strong random passwords in your browser.',tag:'Security',detail:'Create a random password with your selected length and character types. Passwords are generated locally.'},
 {id:'unit',name:'Unit Converter',icon:'↔',desc:'Convert common length, weight, temperature and volume units.',tag:'Calculator',detail:'Convert common measurement units instantly, including temperature.'},
 {id:'heic',name:'HEIC to JPG Converter',icon:'📷',desc:'Convert HEIC/HEIF photos to JPG in your browser.',tag:'Images',detail:'Convert compatible HEIC/HEIF photos locally in your browser. A free conversion library is loaded from a CDN.'},
+{id:'toPdf',name:'Word, Excel & Files to PDF',icon:'▤',desc:'Convert supported documents and spreadsheets to PDF using a browser workflow.',tag:'Files',detail:'Convert DOCX and XLSX files to PDF with a free browser library when the format is supported. Legacy DOC/XLS files may need to be saved as DOCX/XLSX first.'},
 {id:'videoDownload',name:'Video Downloader',icon:'▶',desc:'Download direct video file links you own or have permission to save.',tag:'Files',detail:'Save directly linked video files when the host permits it. This tool does not bypass platform restrictions, DRM, or access controls.'},
 {id:'background',name:'Background Remover',icon:'✂',desc:'Remove image backgrounds with an AI-powered browser workflow.',tag:'Images',detail:'Remove an image background using a free third-party browser library. Processing requires internet access and results depend on browser and model support.'},
 {id:'imageFormat',name:'Image Format Converter',icon:'🖼️',desc:'Convert supported images between PNG, JPG and WebP.',tag:'Images',detail:'Convert images between PNG, JPEG and WebP using your browser.'},
@@ -88,6 +89,7 @@ case'qr':return `<div class="tool-ui"><div>${field('Website URL or text','qrText
 case'password':return `<div class="tool-ui"><div>${field('Password length (8–128)','pwLength','20','number','20')}<div class="field"><label><input id="pwUpper" type="checkbox" checked style="width:auto"> Uppercase letters (A–Z)</label><label><input id="pwLower" type="checkbox" checked style="width:auto"> Lowercase letters (a–z)</label><label><input id="pwNumbers" type="checkbox" checked style="width:auto"> Numbers (0–9)</label><label><input id="pwSymbols" type="checkbox" checked style="width:auto"> Symbols</label></div>${btn('Generate password','makePassword',true)}</div><div>${textArea('Generated password','pwResult','Your password appears here…')}<div class="actions">${btn('Copy password','copyPassword')}</div><p class="hint">Generated locally using your browser’s cryptographic random number generator.</p></div></div>`;
 case'unit':return `<div class="tool-ui"><div><div class="field"><label for="unitType">Measurement</label><select id="unitType"><option value="length">Length</option><option value="weight">Weight / mass</option><option value="volume">Volume</option><option value="temperature">Temperature</option></select></div>${field('Value','unitValue','Enter a number','number','1')}<div class="field"><label for="unitFrom">From</label><select id="unitFrom"></select></div><div class="field"><label for="unitTo">To</label><select id="unitTo"></select></div>${btn('Convert units','convertUnits',true)}</div><div>${output('unitResult')}</div></div>`;
 case'heic':return `<div class="tool-ui"><div><div class="filedrop"><label for="heicFile">Choose a HEIC/HEIF photo</label><br><input id="heicFile" type="file" accept=".heic,.heif,image/heic,image/heif"></div><div class="actions">${btn('Convert to JPG','convertHeic',true)}</div><p class="hint">Uses a free open-source browser library from a CDN. Large files may take time. If the library cannot load, try again with an internet connection.</p></div><div>${output('heicResult')}</div></div>`;
+case'toPdf':return `<div class="tool-ui"><div><div class="filedrop"><label for="toPdfFile">Choose a Word or Excel file</label><br><input id="toPdfFile" type="file" accept=".docx,.xlsx,.doc,.xls,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></div><div class="field"><label for="toPdfFormat">Document type</label><select id="toPdfFormat"><option value="auto">Auto-detect</option><option value="word">Word document (.docx)</option><option value="excel">Excel workbook (.xlsx)</option></select></div><div class="actions">${btn('Convert to PDF','convertToPdf',true)}</div><p class="hint">This tool uses a free browser-based document renderer. DOCX/XLSX support depends on library availability and file complexity. For best results, use modern DOCX/XLSX files. Legacy DOC/XLS, macros, complex layouts and advanced spreadsheet features may not convert accurately.</p></div><div><div id="toPdfResult" class="output">Choose a supported document to start.</div><p class="notice">Files are processed in your browser. The external rendering libraries load from public CDNs. Always review the generated PDF before sharing it.</p></div></div>`;
 case'videoDownload':return `<div class="tool-ui"><div><div class="field"><label for="videoUrl">Direct video file URL</label><input id="videoUrl" type="url" placeholder="https://example.com/video.mp4"></div><div class="field"><label for="videoName">File name (optional)</label><input id="videoName" type="text" placeholder="my-video.mp4"></div><div class="actions">${btn('Prepare download','prepareVideoDownload',true)}</div><p class="hint">Use a direct link to an MP4, WebM, or other video file that you own or are authorized to download. Many social-platform page links are not direct video files and cannot be downloaded by a browser-only website.</p></div><div><div id="videoDownloadResult" class="output">Your download status will appear here.</div><div class="actions"><a id="videoDownloadLink" class="btn hidden" rel="noopener">Download video</a></div><p class="notice">This tool does not bypass DRM, logins, paywalls, or platform restrictions. For platform-hosted videos, use the platform’s official download/export feature where available.</p></div></div>`;
 case'background':return `<div class="tool-ui"><div><div class="filedrop"><label for="backgroundFile">Choose an image</label><br><input id="backgroundFile" type="file" accept="image/*"></div><div class="actions">${btn('Remove background','removeBackground',true)}</div><p class="hint">This tool loads an open-source AI segmentation model in your browser. First use may take time while the model downloads. No paid API is used.</p></div><div><div id="backgroundResult" class="output">Your processed image will appear here.</div><div class="actions">${btn('Download PNG','downloadBackground')}</div></div></div>`;
 case'imageFormat':return `<div class="tool-ui"><div><div class="filedrop"><label for="formatFile">Choose an image</label><br><input id="formatFile" type="file" accept="image/*"></div><div class="field"><label for="formatType">Output format</label><select id="formatType"><option value="image/png">PNG</option><option value="image/jpeg">JPG</option><option value="image/webp">WebP</option></select></div>${btn('Convert and download','convertFormat',true)}</div><div>${output('formatResult')}<canvas id="formatCanvas" class="hidden"></canvas><p class="hint">HEIC support depends on your browser; use the dedicated HEIC converter if needed.</p></div></div>`;
@@ -110,6 +112,50 @@ if(id==='url'){document.getElementById('encodeUrl').onclick=()=>{document.getEle
 
 
 
+
+if(id==='toPdf'){
+ document.getElementById('convertToPdf').onclick=async()=>{
+  const f=document.getElementById('toPdfFile').files[0];
+  if(!f)return setResult('toPdfResult','Choose a DOCX or XLSX file first.',true);
+  const ext=(f.name.split('.').pop()||'').toLowerCase();
+  if(!['docx','xlsx','doc','xls'].includes(ext))return setResult('toPdfResult','Please choose a Word (.docx) or Excel (.xlsx) file.',true);
+  if(['doc','xls'].includes(ext))return setResult('toPdfResult','Legacy .doc and .xls files are not supported reliably in this browser tool. Open them in Word/Excel or LibreOffice and save as .docx/.xlsx, then try again.',true);
+  setResult('toPdfResult','Loading document converter and preparing your file…');
+  try{
+   if(!window.jspdf){await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';s.onload=resolve;s.onerror=reject;document.head.appendChild(s)})}
+   const {jsPDF}=window.jspdf;
+   let pages=[];
+   if(ext==='docx'){
+    if(!window.mammoth){await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.9.0/mammoth.browser.min.js';s.onload=resolve;s.onerror=reject;document.head.appendChild(s)})}
+    const ab=await f.arrayBuffer(),result=await window.mammoth.extractRawText({arrayBuffer:ab});
+    const text=(result.value||'').trim();if(!text)throw new Error('No readable text found in the DOCX file.');
+    const doc=new jsPDF({unit:'pt',format:'a4'}),margin=48,width=doc.internal.pageSize.getWidth()-96,lineHeight=16;
+    const lines=doc.splitTextToSize(text,width);let y=margin;
+    lines.forEach(line=>{if(y>doc.internal.pageSize.getHeight()-margin){doc.addPage();y=margin}doc.text(line,margin,y);y+=lineHeight});
+    doc.save((f.name.replace(/\.docx$/i,'')||'document')+'.pdf');
+    setResult('toPdfResult','PDF created from the readable text in your DOCX. Note: this text-based conversion does not preserve original images, tables, or exact Word formatting.');
+   }else{
+    if(!window.XLSX){await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';s.onload=()=>window.XLSX?resolve():reject(new Error('XLSX library unavailable'));s.onerror=reject;document.head.appendChild(s)})}
+    const wb=window.XLSX.read(await f.arrayBuffer(),{type:'array'}),doc=new jsPDF({unit:'pt',format:'a4'}),margin=32;
+    let first=true;
+    wb.SheetNames.forEach(sheetName=>{
+     const ws=wb.Sheets[sheetName],rows=window.XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+     if(!first)doc.addPage();first=false;
+     doc.setFontSize(13);doc.text(String(sheetName).slice(0,90),margin,margin+4);
+     let y=margin+22;doc.setFontSize(8);
+     rows.forEach(row=>{
+      const text=window.XLSX.utils.encode_row?row.map(v=>String(v??'')).join(' | '):row.join(' | ');
+      const wrapped=doc.splitTextToSize(text,doc.internal.pageSize.getWidth()-margin*2);
+      wrapped.forEach(line=>{if(y>doc.internal.pageSize.getHeight()-margin){doc.addPage();y=margin;doc.setFontSize(8)}doc.text(line,margin,y);y+=10});
+      y+=2;
+     });
+    });
+    doc.save((f.name.replace(/\.xlsx$/i,'')||'spreadsheet')+'.pdf');
+    setResult('toPdfResult','PDF created from spreadsheet cell contents. Complex formatting, charts, formulas and print layouts may not be preserved exactly.');
+   }
+  }catch(e){setResult('toPdfResult','Conversion failed. Check that the file is a valid DOCX/XLSX and that the free conversion libraries can load. Details: '+(e&&e.message?e.message:'unknown error'),true)}
+ };
+}
 if(id==='videoDownload'){
  document.getElementById('prepareVideoDownload').onclick=()=>{
   const raw=document.getElementById('videoUrl').value.trim();

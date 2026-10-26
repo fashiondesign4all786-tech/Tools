@@ -36,3 +36,7 @@ Added a browser-based background removal tool that attempts to load the open-sou
 
 ## Video Downloader
 Added a browser-only direct video-link helper. It supports links that point directly to common video file extensions and that the host permits the browser to download. It intentionally does not download from platform page URLs or bypass DRM, login gates, paywalls, or platform restrictions. Use only content you own or are authorized to save.
+
+
+## Word, Excel & Files to PDF
+Added a browser-based converter for DOCX text and XLSX cell contents to PDF. It loads jsPDF, Mammoth.js, and SheetJS from public CDNs. DOCX conversion extracts text and does not preserve exact layout/images/tables; XLSX conversion prints sheet cell contents and may not preserve charts, formulas or formatting. Legacy DOC/XLS are intentionally not supported; convert them to DOCX/XLSX first. Test output carefully.
