@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: toolnest-video-downloader-api
+    runtime: python
+    rootDir: video-downloader-backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 1 --threads 4 --timeout 120
+    healthCheckPath: /api/health
+    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.6
+      - key: MAX_DOWNLOAD_BYTES
+        value: "209715200"
+      - key: RATE_LIMIT_PER_MINUTE
+        value: "5"
