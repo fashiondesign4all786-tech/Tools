@@ -110,11 +110,30 @@ if(id==='qr'){
   const value=textEl.value.trim(), size=Math.max(128,Math.min(1024,Number(document.getElementById('qrSize').value)||256));
   if(!value)return setResult('qrResult','Enter a URL or text first.',true);
   try{
-   if(!window.QRCode){await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js';s.onload=resolve;s.onerror=reject;document.head.appendChild(s)})}
-   const c=document.createElement('canvas');await window.QRCode.toCanvas(c,value,{width:size,margin:2});c.style.maxWidth='100%';c.style.height='auto';const el=document.getElementById('qrResult');el.innerHTML='';el.appendChild(c);
-  }catch(e){setResult('qrResult','Could not load the QR library. Check your internet connection and try again.',true)}
+   if(typeof window.QRCode!=='function'){
+    await new Promise((resolve,reject)=>{
+     const s=document.createElement('script');
+     s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+     s.onload=()=>typeof window.QRCode==='function'?resolve():reject(new Error('QR library did not initialize'));
+     s.onerror=()=>reject(new Error('QR library failed to load'));
+     document.head.appendChild(s);
+    });
+   }
+   const el=document.getElementById('qrResult');el.innerHTML='';
+   const holder=document.createElement('div');holder.style.cssText='display:flex;justify-content:center;align-items:center;min-height:180px;background:#fff;padding:12px;border-radius:8px;';
+   el.appendChild(holder);
+   new window.QRCode(holder,{text:value,width:size,height:size,colorDark:'#111827',colorLight:'#ffffff',correctLevel:window.QRCode.CorrectLevel.M});
+   const downloadButton=document.getElementById('downloadQr');downloadButton.disabled=false;
+  }catch(e){setResult('qrResult','The QR library could not load. Check your internet connection, disable any script blocker, and try again.',true)}
  };
- document.getElementById('downloadQr').onclick=()=>{const c=document.querySelector('#qrResult canvas');if(!c)return setResult('qrResult','Generate a QR code first.',true);c.toBlob(b=>downloadBlob(b,'toolnest-qr-code.png'))};
+ document.getElementById('downloadQr').onclick=()=>{
+  const holder=document.querySelector('#qrResult div');if(!holder)return setResult('qrResult','Generate a QR code first.',true);
+  const canvas=holder.querySelector('canvas');
+  if(canvas){canvas.toBlob(b=>{if(b)downloadBlob(b,'toolnest-qr-code.png');else setResult('qrResult','Could not export this QR code.',true)});return}
+  const img=holder.querySelector('img');
+  if(img&&img.src){const a=document.createElement('a');a.href=img.src;a.download='toolnest-qr-code.png';a.click();return}
+  setResult('qrResult','The QR code is not ready yet. Try again in a moment.',true);
+ };
 }
 if(id==='password'){
  document.getElementById('makePassword').onclick=()=>{
