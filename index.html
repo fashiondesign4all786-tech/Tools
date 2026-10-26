@@ -675,6 +675,7 @@ window.addEventListener('pageshow',()=>{
  if(category && allowedCategories.includes(category)) activeCategory=category;
  document.querySelectorAll('[data-nav-category]').forEach(a=>a.classList.toggle('active',(a.dataset.navCategory||'All')===activeCategory));
  document.querySelectorAll('#referenceCategoryBar .reference-chip').forEach(b=>b.classList.toggle('active',b.dataset.filter===activeCategory));
+ document.querySelectorAll('#referenceCategoryBar [data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter===activeCategory));
  renderCards(document.getElementById('search').value);
 });
 window.addEventListener('popstate',()=>{
@@ -683,6 +684,7 @@ window.addEventListener('popstate',()=>{
  activeCategory=category&&allowedCategories.includes(category)?category:'All';
  document.querySelectorAll('[data-nav-category]').forEach(a=>a.classList.toggle('active',(a.dataset.navCategory||'All')===activeCategory));
  document.querySelectorAll('#referenceCategoryBar .reference-chip').forEach(b=>b.classList.toggle('active',b.dataset.filter===activeCategory));
+ document.querySelectorAll('#referenceCategoryBar [data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter===activeCategory));
  renderCards(document.getElementById('search').value);
 });
 
