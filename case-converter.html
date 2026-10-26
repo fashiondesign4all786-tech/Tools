@@ -247,6 +247,11 @@ document.querySelectorAll('[data-nav-category]').forEach(link=>link.addEventList
  if(category==='All'){location.href='index.html#tools';return}
  location.href='index.html?category='+encodeURIComponent(category)+'#tools';
 }));
+document.querySelectorAll('[data-nav-category]').forEach(link=>link.addEventListener('click',()=>{
+ const category=link.dataset.navCategory||'All';
+ if(category==='All'){location.href='index.html#tools';return}
+ location.href='index.html?category='+encodeURIComponent(category)+'#tools';
+}));
 document.getElementById('closeTool').onclick=()=>{area.classList.add('hidden');area.scrollIntoView({behavior:'smooth',block:'start'})};
 document.getElementById('search').addEventListener('input',e=>renderCards(e.target.value));
 document.getElementById('searchBtn').onclick=()=>{renderCards(document.getElementById('search').value);document.getElementById('tools').scrollIntoView({behavior:'smooth'})};
