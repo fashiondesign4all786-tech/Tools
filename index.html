@@ -91,7 +91,7 @@ case'unit':return `<div class="tool-ui"><div><div class="field"><label for="unit
 case'heic':return `<div class="tool-ui"><div><div class="filedrop"><label for="heicFile">Choose a HEIC/HEIF photo</label><br><input id="heicFile" type="file" accept=".heic,.heif,image/heic,image/heif"></div><div class="actions">${btn('Convert to JPG','convertHeic',true)}</div><p class="hint">Uses a free open-source browser library from a CDN. Large files may take time. If the library cannot load, try again with an internet connection.</p></div><div>${output('heicResult')}</div></div>`;
 case'toPdf':return `<div class="tool-ui"><div><div class="filedrop"><label for="toPdfFile">Choose a Word or Excel file</label><br><input id="toPdfFile" type="file" accept=".docx,.xlsx,.doc,.xls,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></div><div class="field"><label for="toPdfFormat">Document type</label><select id="toPdfFormat"><option value="auto">Auto-detect</option><option value="word">Word document (.docx)</option><option value="excel">Excel workbook (.xlsx)</option></select></div><div class="actions">${btn('Convert to PDF','convertToPdf',true)}</div><p class="hint">This tool uses a free browser-based document renderer. DOCX/XLSX support depends on library availability and file complexity. For best results, use modern DOCX/XLSX files. Legacy DOC/XLS, macros, complex layouts and advanced spreadsheet features may not convert accurately.</p></div><div><div id="toPdfResult" class="output">Choose a supported document to start.</div><p class="notice">Files are processed in your browser. The external rendering libraries load from public CDNs. Always review the generated PDF before sharing it.</p></div></div>`;
 case'videoDownload':return `<div class="tool-ui"><div><div class="field"><label for="videoUrl">Direct video file URL</label><input id="videoUrl" type="url" placeholder="https://example.com/video.mp4"></div><div class="field"><label for="videoName">File name (optional)</label><input id="videoName" type="text" placeholder="my-video.mp4"></div><div class="actions">${btn('Prepare download','prepareVideoDownload',true)}</div><p class="hint">Use a direct link to an MP4, WebM, or other video file that you own or are authorized to download. Many social-platform page links are not direct video files and cannot be downloaded by a browser-only website.</p></div><div><div id="videoDownloadResult" class="output">Your download status will appear here.</div><div class="actions"><a id="videoDownloadLink" class="btn hidden" rel="noopener">Download video</a></div><p class="notice">This tool does not bypass DRM, logins, paywalls, or platform restrictions. For platform-hosted videos, use the platform’s official download/export feature where available.</p></div></div>`;
-case'background':return `<div class="tool-ui"><div><div class="filedrop"><label for="backgroundFile">Choose an image</label><br><input id="backgroundFile" type="file" accept="image/*"></div><div class="actions">${btn('Remove background','removeBackground',true)}</div><p class="hint">This tool loads an open-source AI segmentation model in your browser. First use may take time while the model downloads. No paid API is used.</p></div><div><div id="backgroundResult" class="output">Your processed image will appear here.</div><div class="actions">${btn('Download PNG','downloadBackground')}</div></div></div>`;
+case'background':return `<div class="tool-ui"><div><div class="filedrop"><label for="backgroundFile">Choose an image</label><br><input id="backgroundFile" type="file" accept="image/*"></div><div class="actions">${btn('Remove background','removeBackground',true)}</div><p class="hint">Uses a free open-source AI model in your browser. The first run downloads model files and may take several minutes. No paid API is used.</p></div><div><div id="backgroundResult" class="output">Your processed image will appear here.</div><div class="actions">${btn('Download PNG','downloadBackground')}</div></div></div>`;
 case'imageFormat':return `<div class="tool-ui"><div><div class="filedrop"><label for="formatFile">Choose an image</label><br><input id="formatFile" type="file" accept="image/*"></div><div class="field"><label for="formatType">Output format</label><select id="formatType"><option value="image/png">PNG</option><option value="image/jpeg">JPG</option><option value="image/webp">WebP</option></select></div>${btn('Convert and download','convertFormat',true)}</div><div>${output('formatResult')}<canvas id="formatCanvas" class="hidden"></canvas><p class="hint">HEIC support depends on your browser; use the dedicated HEIC converter if needed.</p></div></div>`;
 case'pdfCompress':return `<div class="tool-ui"><div><div class="filedrop"><label for="pdfCompressFile">Choose a PDF</label><br><input id="pdfCompressFile" type="file" accept="application/pdf,.pdf"></div>${btn('Check file size','checkPdfSize',true)}<div id="pdfCompressResult" class="output">Choose a PDF to check its size.</div><p class="hint">This basic version does not recompress PDF content. To avoid misleading results, it only reports the file size; compression can be added with a tested PDF-processing library.</p></div></div>`;
 case'pdfMerge':return `<div class="tool-ui"><div><div class="filedrop"><label for="pdfMergeFiles">Choose two or more PDF files</label><br><input id="pdfMergeFiles" type="file" accept="application/pdf,.pdf" multiple></div>${btn('Merge PDFs','mergePdfs',true)}<p class="hint">Uses a free open-source PDF library from a CDN. Files are processed in your browser, not uploaded to a server.</p></div><div>${output('pdfMergeResult')}</div></div>`;
@@ -183,36 +183,49 @@ if(id==='videoDownload'){
  };
 }
 if(id==='background'){
- document.getElementById('removeBackground').onclick=async()=>{
+ const runBtn=document.getElementById('removeBackground');
+ runBtn.onclick=async()=>{
   const file=document.getElementById('backgroundFile').files[0];
   if(!file)return setResult('backgroundResult','Choose an image first.',true);
-  setResult('backgroundResult','Loading the background-removal model… this may take a little while on first use.');
+  if(!/^image\/(jpeg|png|webp|bmp|avif)$/i.test(file.type))return setResult('backgroundResult','Please use a JPG, PNG, WebP, BMP or AVIF image.',true);
+  runBtn.disabled=true;
+  setResult('backgroundResult','Starting the AI model… The first run downloads model files and can take a few minutes.');
   try{
-   if(!window.imglyRemoveBackground){
-    await new Promise((resolve,reject)=>{
-     const s=document.createElement('script');
-     s.src='https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/dist/index.umd.js';
-     s.onload=()=>window.imglyRemoveBackground?resolve():reject(new Error('Library unavailable'));
-     s.onerror=()=>reject(new Error('Library failed to load'));
-     document.head.appendChild(s);
-    });
+   if(!window.__toolnestRemoveBg){
+    // The package is an ES module, not a classic UMD script. Load it as a module.
+    const mod=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm');
+    const fn=mod.default || mod.imglyRemoveBackground || mod.removeBackground;
+    if(typeof fn!=='function')throw new Error('The module loaded, but no background-removal function was exported.');
+    window.__toolnestRemoveBg=fn;
    }
-   const remover=window.imglyRemoveBackground;
-   if(typeof remover!=='function')throw new Error('Background remover unavailable');
-   const result=await remover(file,{publicPath:'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/dist/'});
-   const blob=result instanceof Blob?result:new Blob([result],{type:'image/png'});
+   const removeFn=window.__toolnestRemoveBg;
+   const config={
+    publicPath:'https://staticimgly.com/@imgly/background-removal-data/1.7.0/dist/',
+    model:'isnet_quint8',
+    debug:true,
+    output:{format:'image/png',type:'foreground'},
+    progress:(key,current,total)=>{
+     if(total>0)setResult('backgroundResult',`Downloading AI model: ${Math.round(current/total*100)}% — please keep this tab open.`);
+    }
+   };
+   const blob=await removeFn(file,config);
+   if(!(blob instanceof Blob)||blob.size===0)throw new Error('The model did not return a valid PNG image.');
    window.__toolnestBackgroundBlob=blob;
-   const url=URL.createObjectURL(blob);
+   if(window.__toolnestBackgroundUrl)URL.revokeObjectURL(window.__toolnestBackgroundUrl);
+   const url=URL.createObjectURL(blob);window.__toolnestBackgroundUrl=url;
    const el=document.getElementById('backgroundResult');el.innerHTML='';
-   const img=document.createElement('img');img.src=url;img.alt='Image with background removed';img.style.cssText='display:block;max-width:100%;height:auto;margin:auto;background:repeating-conic-gradient(#ddd 0% 25%,#fff 0% 50%) 50%/16px 16px;border-radius:8px;';
+   const img=document.createElement('img');img.src=url;img.alt='Background removed';img.style.cssText='display:block;max-width:100%;height:auto;margin:auto;background:repeating-conic-gradient(#ddd 0% 25%,#fff 0% 50%) 50%/16px 16px;border-radius:8px;';
    el.appendChild(img);
+   const success=document.createElement('p');success.className='status';success.textContent='Background removed successfully. Preview the transparent PNG, then download it.';el.appendChild(success);
   }catch(e){
-   setResult('backgroundResult','Background removal could not start. The free model may be incompatible with this browser or blocked by the CDN. Check your internet connection and try again.',true);
-  }
+   console.error('ToolNest background remover error:',e);
+   const detail=e&&e.message?e.message:'Unknown error';
+   setResult('backgroundResult','Could not remove the background. '+detail+' Check your internet connection and try again. The first run needs to download a large AI model.',true);
+  }finally{runBtn.disabled=false}
  };
  document.getElementById('downloadBackground').onclick=()=>{
   const blob=window.__toolnestBackgroundBlob;
-  if(!blob)return setResult('backgroundResult','Remove the background first.',true);
+  if(!blob)return setResult('backgroundResult','Remove the background successfully before downloading.',true);
   downloadBlob(blob,'toolnest-background-removed.png');
  };
 }

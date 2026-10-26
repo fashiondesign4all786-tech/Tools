@@ -40,3 +40,9 @@ Added a browser-only direct video-link helper. It supports links that point dire
 
 ## Word, Excel & Files to PDF
 Added a browser-based converter for DOCX text and XLSX cell contents to PDF. It loads jsPDF, Mammoth.js, and SheetJS from public CDNs. DOCX conversion extracts text and does not preserve exact layout/images/tables; XLSX conversion prints sheet cell contents and may not preserve charts, formulas or formatting. Legacy DOC/XLS are intentionally not supported; convert them to DOCX/XLSX first. Test output carefully.
+
+
+Background Remover troubleshooting update: the integration now reports more specific errors and disables the action while processing. The external model/CDN still requires live browser testing and may fail if the CDN bundle does not expose the expected browser API.
+
+
+Background Remover implementation: now loads the official @imgly/background-removal ES module through jsDelivr's +esm endpoint and uses the documented IMG.LY data CDN path. Uses the quantized model to reduce download size. First run requires internet and may take several minutes. Must still be verified on the deployed GitHub Pages site because browser/CDN execution cannot be fully tested in this generation environment.
