@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Explore 17 free online tools from ToolNest for text, images, PDF files, calculations, dates, security and developer tasks.">
+<meta name="description" content="Explore 18 free online tools from ToolNest for text, images, PDF files, calculations, security and developer tasks.">
 <meta name="theme-color" content="#111827">
 <title>ToolNest — Free Online Tools for Everyday Tasks</title>
 <meta name="robots" content="index,follow">
@@ -29,9 +29,9 @@ main{padding:48px 0 80px}.section-head{display:flex;justify-content:space-betwee
 </head>
 <body>
 <header><div class="wrap nav"><a class="logo" href="index.html" aria-label="ToolNest home">Tool<span>Nest</span></a><nav class="navlinks"><a href="#tools">Explore tools</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></nav></div></header>
-<section class="hero"><div class="wrap hero-grid"><div><div class="eyebrow">✦ YOUR EVERYDAY DIGITAL TOOLKIT</div><h1>Get things done.<br>Without the hassle.</h1><p>A thoughtfully organized collection of free online tools for text, images, files, calculations and everyday digital work. Simple to use, quick to access, and built for everyone.</p><div class="searchbox"><input id="search" type="search" placeholder="Search 17 tools — try “image”, “PDF” or “text”" aria-label="Search tools"><button id="searchBtn">Search tools&nbsp; →</button></div></div><div class="hero-stat"><div class="stat-label">One place for everyday tasks</div><strong>17 tools</strong><span>Carefully grouped to help you find what you need faster.</span><div class="mini">✓ No account required<br>✓ Works on desktop and mobile<br>✓ Free tools, no paid APIs</div></div></div></section>
+<section class="hero"><div class="wrap hero-grid"><div><div class="eyebrow">✦ YOUR EVERYDAY DIGITAL TOOLKIT</div><h1>Get things done.<br>Without the hassle.</h1><p>A thoughtfully organized collection of free online tools for text, images, files, calculations and everyday digital work. Simple to use, quick to access, and built for everyone.</p><div class="searchbox"><input id="search" type="search" placeholder="Search 18 tools — try “image”, “PDF” or “text”" aria-label="Search tools"><button id="searchBtn">Search tools&nbsp; →</button></div></div><div class="hero-stat"><div class="stat-label">One place for everyday tasks</div><strong>18 tools</strong><span>Carefully grouped to help you find what you need faster.</span><div class="mini">✓ No account required<br>✓ Works on desktop and mobile<br>✓ Free tools, no paid APIs</div></div></div></section>
 <div class="trust-strip"><div class="wrap trust-inner"><span><i class="trust-dot"></i> Free to use</span><span>⌁ Simple, focused workflows</span><span>▣ Browser-based utilities</span><span>◎ Built for a global audience</span></div></div>
-<main class="wrap" id="tools"><div class="section-head"><div><h2>Find the right tool</h2><p>Browse by category or search by the task you want to complete.</p></div><span class="count" id="resultCount">17 tools</span></div>
+<main class="wrap" id="tools"><div class="section-head"><div><h2>Find the right tool</h2><p>Browse by category or search by the task you want to complete.</p></div><span class="count" id="resultCount">18 tools</span></div>
 <div class="category-bar" id="categoryBar"><button class="category-chip active" data-category="All">All tools</button><button class="category-chip" data-category="Text">Text & writing</button><button class="category-chip" data-category="Images">Image tools</button><button class="category-chip" data-category="Files">Files & documents</button><button class="category-chip" data-category="Calculator">Calculators</button><button class="category-chip" data-category="Date">Date & time</button><button class="category-chip" data-category="Developer">Developer tools</button><button class="category-chip" data-category="Security">Security</button><button class="category-chip" data-category="Generator">Generators</button></div>
 <div class="grid" id="toolGrid"></div>
 <section class="tool-area hidden" id="toolArea"><div class="tool-panel"><div class="panel-head"><div><h2 id="toolTitle">Tool</h2><p id="toolDesc"></p></div><button class="close" id="closeTool" aria-label="Close tool">Close ✕</button></div><div class="panel-body" id="toolBody"></div></div></section>
@@ -55,6 +55,7 @@ const tools = [
 {id:'password',name:'Password Generator',icon:'🔐',desc:'Generate strong random passwords in your browser.',tag:'Security',detail:'Create a random password with your selected length and character types. Passwords are generated locally.'},
 {id:'unit',name:'Unit Converter',icon:'↔',desc:'Convert common length, weight, temperature and volume units.',tag:'Calculator',detail:'Convert common measurement units instantly, including temperature.'},
 {id:'heic',name:'HEIC to JPG Converter',icon:'📷',desc:'Convert HEIC/HEIF photos to JPG in your browser.',tag:'Images',detail:'Convert compatible HEIC/HEIF photos locally in your browser. A free conversion library is loaded from a CDN.'},
+{id:'background',name:'Background Remover',icon:'✂',desc:'Remove image backgrounds with an AI-powered browser workflow.',tag:'Images',detail:'Remove an image background using a free third-party browser library. Processing requires internet access and results depend on browser and model support.'},
 {id:'imageFormat',name:'Image Format Converter',icon:'🖼️',desc:'Convert supported images between PNG, JPG and WebP.',tag:'Images',detail:'Convert images between PNG, JPEG and WebP using your browser.'},
 {id:'pdfCompress',name:'PDF Size Checker',icon:'📄',desc:'Check the size of a PDF file before choosing a compression workflow.',tag:'Files',detail:'This starter tool provides a local PDF size check and explains the limitation: actual PDF recompression requires a PDF processing library.'},
 {id:'pdfMerge',name:'PDF Merger',icon:'📚',desc:'Combine multiple PDF files into one document.',tag:'Files',detail:'Merge multiple PDF files in your browser using a free open-source PDF library loaded from a CDN.'}
@@ -86,6 +87,7 @@ case'qr':return `<div class="tool-ui"><div>${field('Website URL or text','qrText
 case'password':return `<div class="tool-ui"><div>${field('Password length (8–128)','pwLength','20','number','20')}<div class="field"><label><input id="pwUpper" type="checkbox" checked style="width:auto"> Uppercase letters (A–Z)</label><label><input id="pwLower" type="checkbox" checked style="width:auto"> Lowercase letters (a–z)</label><label><input id="pwNumbers" type="checkbox" checked style="width:auto"> Numbers (0–9)</label><label><input id="pwSymbols" type="checkbox" checked style="width:auto"> Symbols</label></div>${btn('Generate password','makePassword',true)}</div><div>${textArea('Generated password','pwResult','Your password appears here…')}<div class="actions">${btn('Copy password','copyPassword')}</div><p class="hint">Generated locally using your browser’s cryptographic random number generator.</p></div></div>`;
 case'unit':return `<div class="tool-ui"><div><div class="field"><label for="unitType">Measurement</label><select id="unitType"><option value="length">Length</option><option value="weight">Weight / mass</option><option value="volume">Volume</option><option value="temperature">Temperature</option></select></div>${field('Value','unitValue','Enter a number','number','1')}<div class="field"><label for="unitFrom">From</label><select id="unitFrom"></select></div><div class="field"><label for="unitTo">To</label><select id="unitTo"></select></div>${btn('Convert units','convertUnits',true)}</div><div>${output('unitResult')}</div></div>`;
 case'heic':return `<div class="tool-ui"><div><div class="filedrop"><label for="heicFile">Choose a HEIC/HEIF photo</label><br><input id="heicFile" type="file" accept=".heic,.heif,image/heic,image/heif"></div><div class="actions">${btn('Convert to JPG','convertHeic',true)}</div><p class="hint">Uses a free open-source browser library from a CDN. Large files may take time. If the library cannot load, try again with an internet connection.</p></div><div>${output('heicResult')}</div></div>`;
+case'background':return `<div class="tool-ui"><div><div class="filedrop"><label for="backgroundFile">Choose an image</label><br><input id="backgroundFile" type="file" accept="image/*"></div><div class="actions">${btn('Remove background','removeBackground',true)}</div><p class="hint">This tool loads an open-source AI segmentation model in your browser. First use may take time while the model downloads. No paid API is used.</p></div><div><div id="backgroundResult" class="output">Your processed image will appear here.</div><div class="actions">${btn('Download PNG','downloadBackground')}</div></div></div>`;
 case'imageFormat':return `<div class="tool-ui"><div><div class="filedrop"><label for="formatFile">Choose an image</label><br><input id="formatFile" type="file" accept="image/*"></div><div class="field"><label for="formatType">Output format</label><select id="formatType"><option value="image/png">PNG</option><option value="image/jpeg">JPG</option><option value="image/webp">WebP</option></select></div>${btn('Convert and download','convertFormat',true)}</div><div>${output('formatResult')}<canvas id="formatCanvas" class="hidden"></canvas><p class="hint">HEIC support depends on your browser; use the dedicated HEIC converter if needed.</p></div></div>`;
 case'pdfCompress':return `<div class="tool-ui"><div><div class="filedrop"><label for="pdfCompressFile">Choose a PDF</label><br><input id="pdfCompressFile" type="file" accept="application/pdf,.pdf"></div>${btn('Check file size','checkPdfSize',true)}<div id="pdfCompressResult" class="output">Choose a PDF to check its size.</div><p class="hint">This basic version does not recompress PDF content. To avoid misleading results, it only reports the file size; compression can be added with a tested PDF-processing library.</p></div></div>`;
 case'pdfMerge':return `<div class="tool-ui"><div><div class="filedrop"><label for="pdfMergeFiles">Choose two or more PDF files</label><br><input id="pdfMergeFiles" type="file" accept="application/pdf,.pdf" multiple></div>${btn('Merge PDFs','mergePdfs',true)}<p class="hint">Uses a free open-source PDF library from a CDN. Files are processed in your browser, not uploaded to a server.</p></div><div>${output('pdfMergeResult')}</div></div>`;
@@ -104,6 +106,41 @@ if(id==='compress'){let img=null,name='image';document.getElementById('quality')
 if(id==='date'){document.getElementById('daysBetween').onclick=()=>{let a=parseDate('dateStart'),b=parseDate('dateEnd');if(!a||!b)return setResult('dateResult','Enter valid dates.',true);let days=Math.round((b-a)/86400000);setResult('dateResult',`<div class="big">${Math.abs(days).toLocaleString()} days</div><p>${days<0?'End date is before start date.':days===0?'Both dates are the same.':'Elapsed days between the dates.'}</p>`) };document.getElementById('addDays').onclick=()=>{let a=parseDate('dateBase'),n=Number(document.getElementById('dateOffset').value);if(!a||!document.getElementById('dateOffset').value||!Number.isFinite(n))return setResult('dateResult','Enter a valid start date and day offset.',true);a.setUTCDate(a.getUTCDate()+n);setResult('dateResult',`<div class="big">${a.toISOString().slice(0,10)}</div><p>${n<0?'Subtracted':'Added'} ${Math.abs(n)} days.</p>`) }}
 if(id==='url'){document.getElementById('encodeUrl').onclick=()=>{document.getElementById('urlResult').value=encodeURIComponent(document.getElementById('urlInput').value)};document.getElementById('decodeUrl').onclick=()=>{try{document.getElementById('urlResult').value=decodeURIComponent(document.getElementById('urlInput').value)}catch(e){document.getElementById('urlResult').value='Could not decode: malformed percent-encoding'}};document.getElementById('copyUrl').onclick=()=>copyText('urlResult')}
 
+
+if(id==='background'){
+ document.getElementById('removeBackground').onclick=async()=>{
+  const file=document.getElementById('backgroundFile').files[0];
+  if(!file)return setResult('backgroundResult','Choose an image first.',true);
+  setResult('backgroundResult','Loading the background-removal model… this may take a little while on first use.');
+  try{
+   if(!window.imglyRemoveBackground){
+    await new Promise((resolve,reject)=>{
+     const s=document.createElement('script');
+     s.src='https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/dist/index.umd.js';
+     s.onload=()=>window.imglyRemoveBackground?resolve():reject(new Error('Library unavailable'));
+     s.onerror=()=>reject(new Error('Library failed to load'));
+     document.head.appendChild(s);
+    });
+   }
+   const remover=window.imglyRemoveBackground;
+   if(typeof remover!=='function')throw new Error('Background remover unavailable');
+   const result=await remover(file,{publicPath:'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/dist/'});
+   const blob=result instanceof Blob?result:new Blob([result],{type:'image/png'});
+   window.__toolnestBackgroundBlob=blob;
+   const url=URL.createObjectURL(blob);
+   const el=document.getElementById('backgroundResult');el.innerHTML='';
+   const img=document.createElement('img');img.src=url;img.alt='Image with background removed';img.style.cssText='display:block;max-width:100%;height:auto;margin:auto;background:repeating-conic-gradient(#ddd 0% 25%,#fff 0% 50%) 50%/16px 16px;border-radius:8px;';
+   el.appendChild(img);
+  }catch(e){
+   setResult('backgroundResult','Background removal could not start. The free model may be incompatible with this browser or blocked by the CDN. Check your internet connection and try again.',true);
+  }
+ };
+ document.getElementById('downloadBackground').onclick=()=>{
+  const blob=window.__toolnestBackgroundBlob;
+  if(!blob)return setResult('backgroundResult','Remove the background first.',true);
+  downloadBlob(blob,'toolnest-background-removed.png');
+ };
+}
 if(id==='qr'){
  const textEl=document.getElementById('qrText');
  document.getElementById('makeQr').onclick=async()=>{

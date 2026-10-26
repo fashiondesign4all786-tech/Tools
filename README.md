@@ -28,3 +28,7 @@ This update adds QR Code Generator, Password Generator, Unit Converter, HEIC to 
 
 ## Professional UI update
 The homepage now uses a more polished layout inspired by common usability patterns from established online tool suites: prominent search, clear category filters, consistent tool cards, responsive layout, and focused tool panels. This is an original design and does not copy any competitor's branding or exact interface.
+
+
+## Background Remover
+Added a browser-based background removal tool that attempts to load the open-source @imgly/background-removal library from a public CDN. It requires an internet connection and model compatibility; test on the deployed site before promoting it. No paid API is used.
