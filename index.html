@@ -237,6 +237,50 @@ main{padding-top:30px!important}.section-head{align-items:center!important;margi
 @media(max-width:620px){#toolGrid.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.reference-category-bar{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;padding:2px 0 9px}.reference-chip{flex:0 0 auto}.section-head{align-items:flex-start!important;flex-direction:column!important}}
 @media(max-width:420px){#toolGrid.grid{grid-template-columns:1fr!important}}
 
+
+/* Professional polish pass */
+:root{--brand:#5145cd;--brand2:#8176f2;--soft:#f1efff;--shadow:0 18px 48px rgba(30,35,85,.10)}
+body{background:#f7f8fc}
+header{background:rgba(255,255,255,.96);box-shadow:0 4px 22px rgba(20,28,65,.035)}
+.nav{min-height:72px}
+.logo:before{border-radius:11px}
+.navlinks{gap:7px;scrollbar-width:none}
+.navlinks::-webkit-scrollbar{display:none}
+.navlinks a{padding:9px 11px;border-radius:10px;transition:background .18s,color .18s}
+.navlinks a:hover,.navlinks a.active{background:#f1efff;color:var(--brand)}
+.navlinks a:last-child{margin-left:3px;background:#f1efff;color:var(--brand)}
+.hero{padding:82px 0 76px;background:radial-gradient(ellipse at 84% 10%,rgba(126,113,245,.30),transparent 32%),radial-gradient(ellipse at 8% 95%,rgba(45,212,191,.13),transparent 34%),linear-gradient(125deg,#14172c 0%,#222044 58%,#35306f 100%)}
+.hero h1{max-width:740px}
+.hero-highlight{color:#b9b1ff}
+.searchbox{border-radius:16px;box-shadow:0 20px 55px rgba(4,7,25,.25)}
+.searchbox input:focus{outline:2px solid #c6c0ff;outline-offset:-2px;border-radius:9px}
+.searchbox button{white-space:nowrap}
+.hero-stat{backdrop-filter:blur(12px);border-radius:24px}
+.trust-inner{gap:28px;padding:19px 0}
+main{padding-top:36px}
+.section-head{margin-bottom:21px}
+.section-head h2{font-size:clamp(1.5rem,2.4vw,2rem)}
+.reference-category-bar{display:flex;flex-wrap:wrap;gap:9px;margin:0 0 26px}
+.reference-chip{border:1px solid #e0e4ef!important;background:#fff!important;color:#4c556c!important;border-radius:999px!important;padding:9px 15px!important;font-weight:700!important;transition:all .18s ease}
+.reference-chip:hover,.reference-chip.active{background:#efedff!important;border-color:#cbc5ff!important;color:#5145cd!important;box-shadow:0 3px 10px rgba(81,69,205,.07)}
+.grid{gap:18px}
+.tool-card{border-radius:19px;padding:21px;min-height:210px;box-shadow:0 4px 15px rgba(25,35,70,.025)}
+.tool-card:hover,.tool-card:focus-visible{transform:translateY(-5px);box-shadow:0 18px 38px rgba(35,37,91,.10);border-color:#c8c2ff}
+.tool-icon{border-radius:15px;background:linear-gradient(145deg,#efedff,#faf9ff);color:#5145cd}
+.tool-card h3{font-size:1.04rem}
+.tool-tag{letter-spacing:.07em}
+.tool-panel{border-radius:22px}
+.panel-head{background:linear-gradient(120deg,#fff,#fafaff)}
+.info-section{margin-top:48px;padding:30px 32px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(140deg,#fff,#fbfbff);box-shadow:0 8px 28px rgba(25,35,70,.035)}
+.info-section h2{letter-spacing:-.035em}
+.footer{background:#15172a;color:#e7e9f5}
+.footer-inner{padding-top:34px;padding-bottom:34px}
+.footer a{color:#d4d7ed}
+.footer a:hover{color:white}
+@media(max-width:900px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.hero-grid{gap:26px}.nav{align-items:flex-start;padding-top:12px;padding-bottom:12px;flex-direction:column;gap:8px}.navlinks{width:100%;max-width:100%}}
+@media(max-width:650px){.wrap{width:min(100% - 28px,1180px)}.hero{padding:52px 0 48px}.hero-grid{grid-template-columns:1fr}.hero h1{font-size:clamp(2.55rem,12vw,3.6rem)}.hero-stat{display:none}.searchbox{gap:5px}.searchbox input{padding:11px 9px}.searchbox button{padding:11px 12px;font-size:.88rem}.trust-inner{justify-content:flex-start;gap:12px 18px;font-size:.8rem}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.tool-card{padding:15px;min-height:195px}.tool-icon{width:42px;height:42px}.tool-card h3{font-size:.96rem}.tool-card p{font-size:.83rem}.info-section{padding:22px 19px;margin-top:32px}.section-head{align-items:flex-start;flex-direction:column;gap:10px}}
+@media(max-width:390px){.grid{grid-template-columns:1fr}.tool-card{min-height:0}.searchbox button{font-size:.8rem;padding:10px}}
+
 </style>
 <link rel="canonical" href="https://fashiondesign4all786-tech.github.io/Tools/">
 <style>/* Compact homepage hero/banner */.hero{padding:42px 0 38px!important}.hero h1{font-size:clamp(2.35rem,4.5vw,3.8rem)!important;margin-top:12px!important;margin-bottom:14px!important}.searchbox{margin-top:20px!important}.hero-stat{padding:18px 22px!important}.stat-illustration{height:135px!important}@media(max-width:760px){.hero{padding:34px 0!important}.hero h1{font-size:clamp(2rem,8vw,3rem)!important}}</style>
@@ -271,7 +315,7 @@ main{padding-top:30px!important}.section-head{align-items:center!important;margi
 \n<main class="wrap" id="tools"><div class="section-head"><div><h2>Find the right tool</h2><p>Browse by category or search by the task you want to complete.</p></div><span class="count" id="resultCount">All tools</span></div>
 
 <div class="reference-category-bar" id="referenceCategoryBar" aria-label="Filter tools by category">
-<button class="reference-chip active" data-filter="All">All</button><button class="reference-chip" data-filter="Text">Text &amp; Writing</button><button class="reference-chip" data-filter="Images">Images</button><button class="reference-chip" data-filter="Audio &amp; Video">Audio &amp; Video</button><a class="reference-chip" href="pdf-tools.html" style="text-decoration:none;display:inline-block">PDF Tools ↗</a><button class="reference-chip" data-filter="Files">Files</button><button class="reference-chip" data-filter="Calculator">Calculators</button><button class="reference-chip" data-filter="Developer">Developer</button>
+<button class="reference-chip active" data-filter="All">All</button><button class="reference-chip" data-filter="Text">Text &amp; Writing</button><button class="reference-chip" data-filter="Images">Images</button><button class="reference-chip" data-filter="Audio &amp; Video">Audio &amp; Video</button><a class="reference-chip" href="pdf-tools.html" style="text-decoration:none;display:inline-block">PDF Tools ↗</a><button class="reference-chip" data-filter="Files">File Tools</button><button class="reference-chip" data-filter="Generator">QR &amp; Generators</button>
 </div>
 <div class="grid" id="toolGrid"></div>
 <section class="tool-area hidden" id="toolArea"><div class="tool-panel"><div class="panel-head"><div><h2 id="toolTitle">Tool</h2><p id="toolDesc"></p></div><button class="close" id="closeTool" aria-label="Close tool">Close ✕</button></div><div class="panel-body" id="toolBody"></div></div></section>
