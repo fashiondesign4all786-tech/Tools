@@ -83,4 +83,4 @@ jobs:
             }
           })();
           EOF
-          node /tmp/toolnest-smoke.cjs
+          NODE_PATH="$GITHUB_WORKSPACE/node_modules" node /tmp/toolnest-smoke.cjs
