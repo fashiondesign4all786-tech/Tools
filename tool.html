@@ -9,6 +9,17 @@
 </head>
 <body>
 <p>Loading tool…</p>
-<script>const id=new URLSearchParams(location.search).get("tool");const allowed=["word","imageResize","case","percent","age","json","csv","compress","date","url","qr","password","unit","heic","toPdf","videoDownload","background","imageFormat","pdfCompress","pdfMerge"];if(allowed.includes(id)){location.replace("index.html?tool="+encodeURIComponent(id))}else{location.replace("index.html")}</script>
+<script>
+const id = new URLSearchParams(location.search).get("tool");
+const specialPages = { videoToMp3: "video-to-mp3.html" };
+const allowed = ["word","imageResize","case","percent","age","json","csv","compress","date","url","qr","password","unit","heic","toPdf","videoDownload","background","imageFormat","pdfCompress","pdfMerge"];
+if (specialPages[id]) {
+  location.replace(specialPages[id]);
+} else if (allowed.includes(id)) {
+  location.replace("index.html?tool=" + encodeURIComponent(id));
+} else {
+  location.replace("index.html");
+}
+</script>
 </body>
 </html>
